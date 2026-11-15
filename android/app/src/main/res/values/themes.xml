@@ -7,4 +7,5 @@
         <item name="android:windowLightStatusBar">true</item>
     </style>
     <color name="ivoire">#F7F3EA</color>
+    <color name="nuit">#0E1124</color>
 </resources>
