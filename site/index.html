@@ -122,6 +122,18 @@ p{text-wrap:pretty}
 .s-annulee{background:var(--laterite-pale);color:var(--laterite)}
 .pub{margin:28px 0;border:1px dashed var(--trait-fort);border-radius:var(--r-md);min-height:96px;display:grid;place-items:center;color:var(--encre-3);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
 body.vip .pub{display:none}
+.pub-annonce,.pub-auto{text-transform:none;letter-spacing:0;font-size:14px}
+.pub-annonce{border-style:solid;border-color:var(--trait-fort);background:var(--carte)}
+.pub-annonce a{display:flex;flex-direction:column;gap:3px;padding:16px 20px;width:100%;color:var(--encre);text-decoration:none}
+.pub-annonce b{font-family:var(--titre);font-size:17px;letter-spacing:-.01em}
+.pub-texte{color:var(--encre-2)}
+.pub-tag{font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--laiton-texte)}
+.pub-auto a{color:var(--encre-3);text-decoration:none;padding:16px;font-size:13.5px}
+.pub-auto a:hover{color:var(--indigo)}
+.pub-google{display:block;min-height:0;border:0}
+.formules{grid-template-columns:1fr 1fr}
+.formules .reseau{height:auto;padding:10px 6px;line-height:1.35}
+.annonce-ligne{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--trait)}
 
 /* ---------- vues ---------- */
 .vue{display:none;animation:entre .28s var(--sortie)}
@@ -479,6 +491,7 @@ textarea.c{min-height:110px;resize:vertical}
       <div class="entete-vue"><div class="sur-titre">Administration</div><h1 style="margin-top:8px">Toutes les commandes</h1><p>Envoie les devis, fais avancer les étapes, livre et réponds aux clients.</p></div>
       <div class="puces" id="filtresAdmin"></div>
       <div id="listeAdmin" class="bordereaux" style="margin-top:8px"></div>
+      <div id="annoncesAdmin"></div>
     </div>
     <div id="adminDetail" class="hide"></div>
   </div>
@@ -537,7 +550,7 @@ textarea.c{min-height:110px;resize:vertical}
 </section>
 </main>
 
-<footer class="pied"><div class="wrap"><div>© <span id="annee"></span> AfricansBiz · Cotonou, Bénin</div><div>contact@africansbiz.com · <a href="#accueil" id="lienCgu">Conditions d'utilisation</a></div></div></footer>
+<footer class="pied"><div class="wrap"><div>© <span id="annee"></span> AfricansBiz · Cotonou, Bénin</div><div>contact@africansbiz.com · <a href="#annonceurs">Annoncer</a> · <a href="conditions.html">Conditions</a> · <a href="confidentialite.html">Confidentialité</a></div></div></footer>
 
 <nav class="nav-bas" aria-label="Navigation">
   <a href="#accueil" data-nav="accueil"><span class="ind"><svg class="i"><use href="#i-accueil"/></svg></span>Accueil</a>
@@ -558,7 +571,11 @@ textarea.c{min-height:110px;resize:vertical}
 const CONFIG = {
   SUPABASE_URL: "https://yhziagctzvwbtxyqptxt.supabase.co",
   SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InloemlhZ2N0enZ3YnR4eXFwdHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3NDU0MzQsImV4cCI6MjExMDMyMTQzNH0.nTSIreQCeSlJRL47W6a9lJXV9wMrXrt5MsGOeP1OlaE",
-  MAIL_DOMAINS: ["africansbiz.com"]
+  MAIL_DOMAINS: ["africansbiz.com"],
+  // Google AdSense : identifiant éditeur (ca-pub-…) et, si tu en crées, les blocs d'annonces par emplacement.
+  // Sans blocs, seules les annonces automatiques (activées dans AdSense) s'affichent.
+  ADSENSE_CLIENT: "",
+  ADSENSE_SLOTS: { accueil: "", outils: "" }
 };
 const DEMO = !CONFIG.SUPABASE_URL;
 
@@ -687,14 +704,20 @@ const reel = {
   mails(b){ return this.call(`/mailbox/messages?address=${encodeURIComponent(b.address)}&token=${encodeURIComponent(b.token)}`); },
   numeros(){ return this.call("/numbers"); },
   sms(id){ return this.call(`/numbers/${id}/sms`); },
-  louer(country){ return this.post("/rent", {country}); }
+  louer(country){ return this.post("/rent", {country}); },
+  formulesPub(){ return this.call("/annonces/formules"); },
+  servirPub(){ return this.call("/annonces/servir"); },
+  creerAnnonce(b){ return this.post("/annonces", b); },
+  annonces(tout){ return this.call("/annonces"+(tout?"?all=1":"")); },
+  payerAnnonce(id, b){ return this.post(`/annonces/${id}/payer`, b); },
+  revueAnnonce(id, decision, motif){ return this.post(`/annonces/${id}/revue`, {decision, motif}); }
 };
 
 /* ---------- simulation (mode démo) ---------- */
 const demo = (() => {
   const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a, chiffres=n=>Array.from({length:n},()=>rnd(0,9)).join("");
   const h = m => new Date(Date.now()-m*60000).toISOString();
-  let seq = 41, paiement = null;
+  let seq = 41, paiement = null, annoncesDemo = [];
   const ref = () => "AB-2611-"+String(++seq).padStart(4,"0");
   const svc = id => SERVICES_DEMO.find(s=>s.id===id);
   const cmd = (service_id, status, montant, brief, minutes, events, msgs, client="awa.sossou@gmail.com") => ({
@@ -762,6 +785,7 @@ const demo = (() => {
       if(Date.now()-paiement.at<5000) return {status:"PENDING"};
       if(!paiement.fait){ paiement.fait=true;
         if(paiement.quoi==="cmd"){ const c=trouve(paiement.cible); c.status="payee"; c.events.push({kind:"status",label:"Paiement confirmé",detail:"Mobile Money",created_at:new Date().toISOString()}); }
+        else if(paiement.quoi==="annonce"){ const a=annoncesDemo.find(x=>x.id===paiement.cible); if(a) a.statut="en_revue"; }
         else { const m = store.get("demo_moi")||{}; Object.assign(m,{plan:paiement.cible, credits:{bronze:3,argent:15,or:50}[paiement.cible], plan_until:new Date(Date.now()+30*864e5).toISOString()}); store.set("demo_moi",m); }
       }
       return {status:"SUCCESS"};
@@ -781,7 +805,13 @@ const demo = (() => {
     async louer(country){ await wait(500); if(moi.plan==="free") throw new Error("Location réservée aux membres VIP"); if(moi.credits<=0) throw new Error("Plus de locations sur ton pack");
       const m=store.get("demo_moi")||{}; m.credits=(m.credits||0)-1; store.set("demo_moi",m); moi.credits=m.credits;
       location={id:"R"+Date.now(),e164:"+"+PAYS[country]+motifs[country](),country,rented_until:new Date(Date.now()+20*60000).toISOString(),sms:[]};
-      setTimeout(()=>location.sms.unshift(unSms(0)),9000); return {number:location}; }
+      setTimeout(()=>location.sms.unshift(unSms(0)),9000); return {number:location}; },
+    async formulesPub(){ return {formules:{semaine:{label:"1 semaine",jours:7,prix:2500},mois:{label:"1 mois",jours:30,prix:8000}}}; },
+    async servirPub(){ return {annonce:null}; },
+    async creerAnnonce(b){ await wait(300); const a={id:"A"+Date.now(), ...b, jours:b.formule==="mois"?30:7, prix:b.formule==="mois"?8000:2500, statut:"a_payer", vues:0, clics:0, created_at:new Date().toISOString()}; annoncesDemo.unshift(a); return {annonce:a}; },
+    async annonces(){ return {annonces:annoncesDemo}; },
+    async payerAnnonce(id){ await wait(700); paiement={id:"P"+Date.now(), quoi:"annonce", cible:id, at:Date.now()}; return {payment_id:paiement.id, status:"PENDING", instructions:"Démo : le paiement sera confirmé dans 5 secondes."}; },
+    async revueAnnonce(id, d, motif){ const a=annoncesDemo.find(x=>x.id===id); if(a){ a.statut=d==="accepter"?"active":"refusee"; a.motif=motif||null; if(d==="accepter") a.fin=new Date(Date.now()+a.jours*864e5).toISOString(); } return {ok:true}; }
   };
 })();
 const api = DEMO ? demo : reel;
@@ -794,6 +824,7 @@ const VUES = ["accueil","services","commandes","outils","admin"];
 function route(){
   let v = location.hash.slice(1) || "accueil";
   if(v==="packs-vip"){ v="outils"; }
+  if(v==="annonceurs"){ ouvrirAnnonceurs(); v = vueCourante; history.replaceState(null, "", "#"+v); }
   if(!VUES.includes(v)) v = "accueil";
   if(v==="admin" && moi.role!=="admin") v = "commandes";
   if(v!==vueCourante){ arretChat(); }
@@ -849,9 +880,9 @@ function ouvrirCompte(){
 }
 $("#btnCompte").onclick = ouvrirCompte;
 async function rafraichirMoi(){
-  if(!session){ moi={plan:"free",credits:0,role:"client"}; return appliquerMoi(); }
+  if(!session){ moi={plan:"free",credits:0,role:"client"}; appliquerMoi(); return remplirPubs(); }
   try{ moi = {...moi, ...(await api.me())}; }catch(e){ if(/401|connecte/i.test(e.message)){ session=null; store.del("session"); } }
-  appliquerMoi();
+  appliquerMoi(); remplirPubs();
 }
 function appliquerMoi(){
   const vip = moi.plan && moi.plan!=="free";
@@ -943,7 +974,9 @@ async function payer(opt){
     const b=$("#pPayer"); b.disabled=true; b.innerHTML='<span class="spin"></span> Envoi de la demande…';
     try{
       const corps = {network:reseau, phone:tel, full_name:nom, country:"BJ"};
-      const r = opt.quoi==="pack" ? await api.payerPack({...corps, pack:opt.pack}) : await api.payerCommande(opt.id, corps);
+      const r = opt.quoi==="pack" ? await api.payerPack({...corps, pack:opt.pack})
+              : opt.quoi==="annonce" ? await api.payerAnnonce(opt.id, corps)
+              : await api.payerCommande(opt.id, corps);
       if(r.checkout_url){ toast("Ce réseau n'accepte pas le paiement direct : choisis-en un autre"); b.disabled=false; b.textContent="Payer "+F(opt.montant); return; }
       paiementEnCours = r.payment_id;
       $("#pInstr").textContent = r.instructions || "Une demande de paiement est arrivée sur ton téléphone.";
@@ -1082,6 +1115,7 @@ async function chargerMessages(forcer){
 /* ---------- administration ---------- */
 let filtreAdmin = "actives";
 async function rendreAdmin(){
+  rendreAnnoncesAdmin();
   const F_ = [["actives","En cours"],["devis","Devis à faire"],["a_payer","À payer"],["en_cours","En réalisation"],["validation","À valider"],["livree","Livrées"],["tout","Tout"]];
   $("#filtresAdmin").innerHTML = F_.map(([k,l])=>`<button class="puce ${filtreAdmin===k?"on":""}" data-fa="${k}">${l}</button>`).join("");
   $("#listeAdmin").innerHTML = `<div class="carte vide"><span class="spin" style="display:inline-block"></span></div>`;
@@ -1245,11 +1279,103 @@ function creerGlobe(){
 }
 
 /* =========================================================
+   PUBLICITÉ : annonce d'un annonceur > Google AdSense > « Ton annonce ici »
+   Rien de tout cela n'est montré aux membres VIP.
+   ========================================================= */
+let adsenseCharge = false;
+function chargerAdsense(){
+  if(adsenseCharge || !CONFIG.ADSENSE_CLIENT) return; adsenseCharge = true;
+  const sc = document.createElement("script"); sc.async = true; sc.crossOrigin = "anonymous";
+  sc.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=" + encodeURIComponent(CONFIG.ADSENSE_CLIENT);
+  document.head.appendChild(sc);
+}
+async function remplirPubs(){
+  if(document.body.classList.contains("vip")) return;
+  chargerAdsense(); // annonces automatiques, si elles sont activées dans AdSense
+  for(const el of $$(".pub")){
+    if(el.dataset.rempli) continue; el.dataset.rempli = "1";
+    let a = null; try{ a = (await api.servirPub()).annonce; }catch{}
+    if(a){ el.classList.add("pub-annonce"); el.innerHTML = `<a href="${esc(a.url)}" target="_blank" rel="noopener sponsored nofollow"><span class="pub-tag">Annonce</span><b>${esc(a.titre)}</b><span class="pub-texte">${esc(a.texte)}</span></a>`; continue; }
+    const bloc = (CONFIG.ADSENSE_SLOTS||{})[el.dataset.pub];
+    if(CONFIG.ADSENSE_CLIENT && bloc){
+      el.classList.add("pub-google");
+      el.innerHTML = `<ins class="adsbygoogle" style="display:block;width:100%" data-ad-client="${esc(CONFIG.ADSENSE_CLIENT)}" data-ad-slot="${esc(bloc)}" data-ad-format="auto" data-full-width-responsive="true"></ins>`;
+      try{ (window.adsbygoogle = window.adsbygoogle || []).push({}); }catch{}
+      continue;
+    }
+    el.classList.add("pub-auto"); el.innerHTML = `<a href="#annonceurs">Ton annonce ici · dès ${F(2500)} la semaine</a>`;
+  }
+}
+
+const STATUT_ANNONCE = { a_payer:["À payer","s-a_payer"], en_revue:["En vérification","s-devis"], active:["En ligne","s-livree"], refusee:["Refusée","s-annulee"], expiree:["Terminée","s-devis"] };
+let formulesPub = null, brouillonPub = null;
+const payerAnnonce = (id, prix, libelle) => payer({quoi:"annonce", id, montant:prix, titre:libelle, ensuite:()=>{ toast("Paiement reçu : ton annonce est en vérification"); ouvrirAnnonceurs(); }});
+async function ouvrirAnnonceurs(){
+  if(!formulesPub){ try{ formulesPub = (await api.formulesPub()).formules; }catch{ formulesPub = {semaine:{label:"1 semaine",jours:7,prix:2500}, mois:{label:"1 mois",jours:30,prix:8000}}; } }
+  const b0 = brouillonPub || {formule:"semaine", titre:"", texte:"", lien:""}; brouillonPub = null;
+  let formule = b0.formule;
+  ouvrirFeuille(enteteFeuille("Annoncer sur AfricansBiz", "Ta bannière vue par les visiteurs du site et de l'application.") + `
+    <div class="champ"><label>Durée</label></div>
+    <div class="reseaux formules" id="anFormules">${Object.entries(formulesPub).map(([k,f])=>`<button class="reseau ${k===formule?"on":""}" data-f="${esc(k)}">${esc(f.label)}<br><span class="mono">${F(f.prix)}</span></button>`).join("")}</div>
+    <div class="champ"><label for="anTitre">Titre</label><input class="c" id="anTitre" maxlength="60" placeholder="Boutique Awa : pagnes et wax" value="${esc(b0.titre)}"></div>
+    <div class="champ"><label for="anTexte">Texte</label><textarea class="c" id="anTexte" maxlength="160" rows="2" placeholder="Pagnes, wax et retouches à Cotonou. Livraison rapide.">${esc(b0.texte)}</textarea><span class="aide"><span id="anCompte">0</span>/160</span></div>
+    <div class="champ"><label for="anLien">Lien (site, page Facebook, WhatsApp…)</label><input class="c" id="anLien" type="url" inputmode="url" placeholder="https://wa.me/22997000000" value="${esc(b0.lien)}"></div>
+    <div class="champ"><label>Aperçu</label><div class="pub pub-annonce" style="margin:0"><a><span class="pub-tag">Annonce</span><b id="anApTitre"></b><span class="pub-texte" id="anApTexte"></span></a></div></div>
+    <button class="btn btn-plein btn-large" id="anPayer">Continuer vers le paiement</button>
+    <p class="muet petit" style="margin-top:10px">Chaque annonce est vérifiée sous 24 h puis mise en ligne pour la durée choisie. Elle n'est pas montrée aux membres VIP. Annonce refusée : remboursement intégral.</p>
+    <div id="anMes"></div>`);
+  const maj = () => { $("#anApTitre").textContent = $("#anTitre").value.trim() || "Ton titre"; $("#anApTexte").textContent = $("#anTexte").value.trim() || "Ton texte"; $("#anCompte").textContent = $("#anTexte").value.length; };
+  $("#anTitre").oninput = maj; $("#anTexte").oninput = maj; maj();
+  $("#anFormules").onclick = e => { const b=e.target.closest("[data-f]"); if(!b) return; formule=b.dataset.f; $$("#anFormules .reseau").forEach(x=>x.classList.toggle("on",x===b)); };
+  $("#anPayer").onclick = async () => {
+    const titre=$("#anTitre").value.trim(), texte=$("#anTexte").value.trim(), lien=$("#anLien").value.trim();
+    if(titre.length<3) return toast("Titre trop court (3 caractères minimum)");
+    if(texte.length<10) return toast("Texte trop court (10 caractères minimum)");
+    if(!/^https:\/\/\S+$/.test(lien)) return toast("Le lien doit commencer par https://");
+    if(!session){ brouillonPub = {formule, titre, texte, lien}; return ouvrirConnexion(()=>ouvrirAnnonceurs()); }
+    const b=$("#anPayer"); b.disabled=true;
+    try{ const {annonce} = await api.creerAnnonce({formule, titre, texte, lien}); payerAnnonce(annonce.id, annonce.prix, "Annonce · "+(formulesPub[formule]?.label||"")); }
+    catch(e){ toast(e.message); b.disabled=false; }
+  };
+  if(session) mesAnnonces();
+}
+async function mesAnnonces(){
+  let annonces = []; try{ annonces = (await api.annonces(false)).annonces || []; }catch{ return; }
+  if(!annonces.length || !$("#anMes")) return;
+  const jour = d => new Date(d).toLocaleDateString("fr-FR",{day:"numeric",month:"short"});
+  $("#anMes").innerHTML = `<h4 style="margin:22px 0 4px;font-family:var(--titre)">Mes annonces</h4>` + annonces.map(a => {
+    const [l, c] = STATUT_ANNONCE[a.statut] || [a.statut, ""];
+    const infos = [a.jours===30?"1 mois":a.jours+" jours", F(a.prix)];
+    if(a.statut==="active" && a.fin) infos.push("jusqu'au "+jour(a.fin));
+    if(a.vues) infos.push(`${a.vues} vues · ${a.clics} clics`);
+    if(a.statut==="refusee" && a.motif) infos.push(esc(a.motif));
+    return `<div class="annonce-ligne"><div><b>${esc(a.titre)}</b><div class="muet petit">${infos.join(" · ")}</div></div>
+      <div style="text-align:right;flex:none"><span class="statut ${c}">${l}</span>${a.statut==="a_payer"?`<br><button class="btn btn-contour btn-petit" style="margin-top:6px" data-payer-an="${esc(a.id)}" data-prix="${a.prix}">Payer</button>`:""}</div></div>`;
+  }).join("");
+  $("#anMes").onclick = e => { const b=e.target.closest("[data-payer-an]"); if(b) payerAnnonce(b.dataset.payerAn, +b.dataset.prix, "Annonce"); };
+}
+async function rendreAnnoncesAdmin(){
+  const z = $("#annoncesAdmin"); if(!z) return;
+  let l = []; try{ l = ((await api.annonces(true)).annonces || []).filter(a=>a.statut==="en_revue"); }catch{}
+  z.innerHTML = !l.length ? "" : `<h3 style="margin:32px 0 12px">Annonces à vérifier (${l.length})</h3>` + l.map(a => `
+    <div class="carte" style="padding:16px;margin-bottom:10px">
+      <div class="pub pub-annonce" style="margin:0 0 10px"><a href="${esc(a.lien)}" target="_blank" rel="noopener nofollow"><span class="pub-tag">Annonce · ${a.jours===30?"1 mois":a.jours+" jours"} · ${F(a.prix)} payés</span><b>${esc(a.titre)}</b><span class="pub-texte">${esc(a.texte)}</span></a></div>
+      <div class="muet petit" style="margin-bottom:12px;word-break:break-all">${esc(a.lien)}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-plein btn-petit" data-revue="${esc(a.id)}" data-d="accepter">Mettre en ligne</button><button class="btn btn-contour btn-petit" data-revue="${esc(a.id)}" data-d="refuser">Refuser</button></div>
+    </div>`).join("");
+}
+$("#annoncesAdmin").addEventListener("click", async e => {
+  const b = e.target.closest("[data-revue]"); if(!b) return;
+  let motif = "";
+  if(b.dataset.d==="refuser"){ motif = prompt("Motif du refus (visible par l'annonceur). Pense à le rembourser."); if(motif===null) return; }
+  try{ await api.revueAnnonce(b.dataset.revue, b.dataset.d, motif); toast(b.dataset.d==="accepter"?"Annonce en ligne":"Annonce refusée"); rendreAnnoncesAdmin(); }catch(err){ toast(err.message); }
+});
+
+/* =========================================================
    DÉMARRAGE
    ========================================================= */
 $("#annee").textContent = new Date().getFullYear();
 if(DEMO){ $("#bandeauDemo").classList.remove("hide"); if(!store.get("demo_moi")) store.set("demo_moi",{role:"admin",plan:"free",credits:0}); }
-$("#lienCgu").onclick = e => { e.preventDefault(); ouvrirFeuille(enteteFeuille("Conditions d'utilisation") + `<p class="second" style="font-size:14.5px">Les outils (email temporaire, numéros) sont interdits pour la fraude, l'arnaque, l'usurpation d'identité, le spam ou toute activité illégale. Les numéros publics sont visibles par tous : ne les utilise jamais pour un compte important. Les commandes sont réalisées après paiement ; les modifications se discutent dans le chat de la commande. AfricansBiz peut suspendre un compte en cas d'abus.</p>`); };
 (async () => {
   try{ const r = await api.services(); if(r.services?.length) services = r.services; }catch{}
   rendreFamilles();
