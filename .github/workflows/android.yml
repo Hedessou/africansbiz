@@ -1,6 +1,7 @@
 # Compile l'application Android à chaque push et publie l'APK.
 # Secrets à ajouter dans GitHub → Settings → Secrets and variables → Actions :
 #   SUPABASE_URL, SUPABASE_ANON_KEY  (sans eux, l'app démarre en mode démo)
+#   ADMOB_APP_ID, ADMOB_REWARDED     (facultatifs : sans eux, pubs de test Google)
 name: Android APK
 on:
   push:
@@ -25,6 +26,8 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          ADMOB_APP_ID: ${{ secrets.ADMOB_APP_ID }}       # facultatif : sinon identifiants de test Google
+          ADMOB_REWARDED: ${{ secrets.ADMOB_REWARDED }}
         run: gradle :app:assembleRelease --no-daemon --stacktrace
       - uses: actions/upload-artifact@v4
         with:

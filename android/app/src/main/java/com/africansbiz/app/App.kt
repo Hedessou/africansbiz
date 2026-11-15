@@ -445,7 +445,15 @@ fun Commander(s: AppState, svc: Service) {
 // PAIEMENT SASPAY (push direct sur le téléphone, sans redirection)
 // =========================================================
 @Composable
-fun Paiement(s: AppState, o: Order, onFerme: () -> Unit, onPaye: () -> Unit) {
+fun Paiement(s: AppState, o: Order, onFerme: () -> Unit, onPaye: () -> Unit) =
+    PaiementMobile(s, "${o.ref} · ${o.serviceName}", o.amount ?: 0, { n, t, nom -> s.api.payOrder(o.id, n, t, nom) }, onFerme, onPaye)
+
+@Composable
+fun PaiementMobile(
+    s: AppState, libelle: String, montant: Int,
+    demarrer: suspend (reseau: String, tel: String, nom: String) -> PayStart,
+    onFerme: () -> Unit, onPaye: () -> Unit,
+) {
     var reseaux by remember { mutableStateOf<List<PayNetwork>>(emptyList()) }
     var reseau by remember { mutableStateOf<String?>(null) }
     var nom by remember { mutableStateOf("") }
@@ -467,12 +475,12 @@ fun Paiement(s: AppState, o: Order, onFerme: () -> Unit, onPaye: () -> Unit) {
         Surface(shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surfaceContainerLowest, modifier = Modifier.fillMaxWidth(.92f)) {
             Column(Modifier.padding(22.dp).verticalScroll(rememberScrollState())) {
                 Text("Paiement Mobile Money", style = MaterialTheme.typography.titleLarge)
-                Text("${o.ref} · ${o.serviceName}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(libelle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(Modifier.height(14.dp))
                 val p = attente
                 if (p == null) {
                     Surface(color = MaterialTheme.colorScheme.surfaceContainer, shape = RoundedCornerShape(12.dp)) {
-                        Row(Modifier.fillMaxWidth().padding(14.dp)) { Text("Montant", Modifier.weight(1f)); Text(francs(o.amount), style = Mono.copy(fontSize = 17.sp, fontWeight = FontWeight.SemiBold)) }
+                        Row(Modifier.fillMaxWidth().padding(14.dp)) { Text("Montant", Modifier.weight(1f)); Text(francs(montant), style = Mono.copy(fontSize = 17.sp, fontWeight = FontWeight.SemiBold)) }
                     }
                     Spacer(Modifier.height(14.dp))
                     Text("Ton réseau", style = MaterialTheme.typography.labelLarge)
@@ -492,12 +500,12 @@ fun Paiement(s: AppState, o: Order, onFerme: () -> Unit, onPaye: () -> Unit) {
                         envoi = true
                         s.lancer {
                             try {
-                                val r = s.api.payOrder(o.id, reseau!!, tel.filter { it.isDigit() }, nom.trim())
+                                val r = demarrer(reseau!!, tel.filter { it.isDigit() }, nom.trim())
                                 if (!r.checkoutUrl.isNullOrBlank()) s.toast("Ce réseau n'accepte pas le paiement direct : choisis-en un autre")
                                 else attente = r
                             } finally { envoi = false }
                         }
-                    }) { if (envoi) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) else Text("Payer ${francs(o.amount)}") }
+                    }) { if (envoi) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) else Text("Payer ${francs(montant)}") }
                     Spacer(Modifier.height(8.dp))
                     Text("La demande arrive sur ton téléphone. Tu restes dans AfricansBiz.", style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.fillMaxWidth())
@@ -826,6 +834,7 @@ fun EmailTemporaire(s: AppState) {
                 boite?.let { b -> Text("Expire à ${heure(b.expiresAt)}, puis tout est effacé", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant, modifier = Modifier.padding(top = 10.dp)) }
             }
         }
+        item { BanniereAnnonce(s) }
         item { Text("Boîte de réception (${mails.size})", style = MaterialTheme.typography.titleMedium) }
         if (mails.isEmpty()) item { Text("Aucun mail pour l'instant : ils apparaissent ici tout seuls.", color = cs.onSurfaceVariant) }
         items(mails, key = { it.id }) { m ->
@@ -858,6 +867,8 @@ fun NumerosSms(s: AppState) {
     var numeros by remember { mutableStateOf<List<Phone>?>(null) }
     var choisi by remember { mutableStateOf<Phone?>(null) }
     var sms by remember { mutableStateOf<List<Sms>>(emptyList()) }
+    var paysLocation by remember { mutableStateOf("BJ") }
+    var location by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { numeros = try { s.api.phones() } catch (e: Exception) { s.toast(e.message ?: "Erreur"); emptyList() } }
     LaunchedEffect(choisi?.id) {
         val p = choisi ?: return@LaunchedEffect
@@ -868,6 +879,28 @@ fun NumerosSms(s: AppState) {
     val p = choisi
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         if (p == null) {
+            item {
+                CarteSection("Numéro privé") {
+                    Text("Un numéro rien que pour toi pendant 20 minutes : toi seul vois les SMS reçus.", color = cs.onSurfaceVariant)
+                    Spacer(Modifier.height(10.dp))
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(PAYS.keys.toList()) { c -> FilterChip(selected = paysLocation == c, onClick = { paysLocation = c }, label = { Text(PAYS[c] ?: c) }) }
+                    }
+                    Spacer(Modifier.height(10.dp))
+                    Button(enabled = !location, modifier = Modifier.fillMaxWidth().height(48.dp), onClick = {
+                        if (!s.exigerConnexion()) return@Button
+                        location = true
+                        s.lancer {
+                            try { choisi = s.api.rent(paysLocation); s.rafraichirMoi(); s.toast("Numéro loué pour 20 minutes") } finally { location = false }
+                        }
+                    }) { if (location) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) else Text("Louer un numéro · 1 crédit") }
+                    Text(
+                        if (s.session == null) "Connecte-toi pour louer un numéro." else "Crédits : ${s.me.credits}. Gagne-en avec une vidéo (Mon compte) ou un pack VIP.",
+                        style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant, modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
+            }
+            item { BanniereAnnonce(s) }
             item { Text("Numéros publics : tout le monde voit les SMS reçus. N'utilise jamais un numéro public pour un compte important.", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant) }
             val l = numeros
             if (l == null) item { Box(Modifier.fillMaxWidth().padding(40.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() } }
@@ -886,7 +919,10 @@ fun NumerosSms(s: AppState) {
             item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = { choisi = null }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Retour") }
-                    Column(Modifier.weight(1f)) { Text(p.e164, style = Mono.copy(fontSize = 18.sp)); Text(PAYS[p.country] ?: p.country, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant) }
+                    Column(Modifier.weight(1f)) {
+                        Text(p.e164, style = Mono.copy(fontSize = 18.sp))
+                        Text((PAYS[p.country] ?: p.country) + (p.rentedUntil?.let { " · privé jusqu'à ${heure(it)}" } ?: ""), style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
+                    }
                     FilledTonalButton(onClick = { presse.setText(AnnotatedString(p.e164)); s.toast("Numéro copié") }) { Text("Copier") }
                 }
             }
@@ -915,7 +951,12 @@ fun Compte(s: AppState) {
     var code by remember { mutableStateOf("") }
     var etape by remember { mutableIntStateOf(1) }
     var envoi by remember { mutableStateOf(false) }
+    var packChoisi by remember { mutableStateOf<Pack?>(null) }
     val cs = MaterialTheme.colorScheme
+    packChoisi?.let { pk ->
+        PaiementMobile(s, "Pack ${pk.nom} · ${pk.duree}", pk.prix, { n, t, nom -> s.api.payPack(pk.id, n, t, nom) },
+            onFerme = { packChoisi = null }, onPaye = { packChoisi = null; s.lancer { s.rafraichirMoi() } })
+    }
     Column(Modifier.fillMaxSize()) {
         BarreRetour(s, if (s.session == null) "Connexion" else "Mon compte")
         Column(Modifier.verticalScroll(rememberScrollState()).padding(20.dp).imePadding()) {
@@ -952,11 +993,35 @@ fun Compte(s: AppState) {
                 CarteSection {
                     Text(s.me.email ?: s.session?.email ?: "", style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(6.dp))
-                    Text("Pack outils : " + when (s.me.plan) { "bronze" -> "Bronze"; "argent" -> "Argent"; "or" -> "Or"; else -> "Gratuit" }, color = cs.onSurfaceVariant)
-                    if (s.me.plan != "free") Text("Locations de numéros restantes : ${s.me.credits}", color = cs.onSurfaceVariant)
+                    Text("Pack outils : " + (PACKS.firstOrNull { it.id == s.me.plan }?.nom ?: "Gratuit") +
+                        (s.me.planUntil?.takeIf { s.me.vip }?.let { " · jusqu'au ${dateHeure(it)}" } ?: ""), color = cs.onSurfaceVariant)
+                    Text("Crédits de location de numéros : ${s.me.credits}", color = cs.onSurfaceVariant)
                     if (s.me.role == "admin") { Spacer(Modifier.height(8.dp)); Surface(color = cs.tertiaryContainer, shape = CircleShape) { Text("Administrateur", Modifier.padding(horizontal = 10.dp, vertical = 4.dp), color = cs.onTertiaryContainer, style = MaterialTheme.typography.labelMedium) } }
                 }
                 Spacer(Modifier.height(12.dp))
+                BoutonVideo(s)
+                Text("Une vidéo regardée jusqu'au bout = 1 crédit (3 par jour).", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp))
+                Spacer(Modifier.height(20.dp))
+                SousTitre("Packs VIP")
+                Spacer(Modifier.height(8.dp))
+                PACKS.forEach { pk ->
+                    val actif = s.me.plan == pk.id
+                    OutlinedCard(modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
+                        border = BorderStroke(if (actif) 2.dp else 1.dp, if (actif) cs.primary else cs.outlineVariant)) {
+                        Column(Modifier.padding(16.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(pk.nom, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                                Text(francs(pk.prix), style = Mono.copy(fontSize = 16.sp, fontWeight = FontWeight.SemiBold))
+                            }
+                            Text(pk.duree, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
+                            Spacer(Modifier.height(6.dp))
+                            pk.avantages.forEach { a -> Row { Icon(Icons.Filled.Check, null, Modifier.size(18.dp).padding(top = 2.dp), tint = cs.primary); Spacer(Modifier.width(6.dp)); Text(a, style = MaterialTheme.typography.bodyMedium) } }
+                            Spacer(Modifier.height(10.dp))
+                            Button(onClick = { packChoisi = pk }, modifier = Modifier.fillMaxWidth()) { Text(if (actif) "Prolonger" else "Choisir ${pk.nom}") }
+                        }
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
                 OutlinedButton(onClick = { s.onglet(Ecran.Commandes) }, modifier = Modifier.fillMaxWidth()) { Text("Mes commandes") }
                 TextButton(onClick = { s.deconnecter(); s.toast("Déconnecté") }, modifier = Modifier.fillMaxWidth()) { Text("Se déconnecter") }
             }

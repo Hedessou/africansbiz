@@ -50,6 +50,18 @@ export function safeEqual(a: string, b: string): boolean {
   return r === 0;
 }
 
+// Secret partagé avec le Worker e-mail Cloudflare et le relais SMS Termux.
+// Variable d'environnement INBOUND_SECRET si elle existe, sinon table privée « reglages » (mise en cache).
+let inboundCache: string | null = null;
+export async function inboundSecret(): Promise<string> {
+  const env = Deno.env.get("INBOUND_SECRET");
+  if (env) return env;
+  if (inboundCache) return inboundCache;
+  const { data } = await admin.from("reglages").select("valeur").eq("cle", "inbound_secret").maybeSingle();
+  inboundCache = data?.valeur ?? "";
+  return inboundCache;
+}
+
 export function clientIp(req: Request): string {
   return (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "inconnu";
 }

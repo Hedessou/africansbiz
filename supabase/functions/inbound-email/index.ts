@@ -5,14 +5,14 @@
 // Déploiement : supabase functions deploy inbound-email --no-verify-jwt
 // =========================================================
 import PostalMime from "npm:postal-mime@2";
-import { admin, cors, err, json, safeEqual } from "../_shared/util.ts";
+import { admin, cors, err, inboundSecret, json, safeEqual } from "../_shared/util.ts";
 
 const MAX_BYTES = 1_000_000;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return err("Méthode non autorisée", 405);
-  if (!safeEqual(req.headers.get("x-secret") ?? "", Deno.env.get("INBOUND_SECRET") ?? "")) return err("Interdit", 403);
+  if (!safeEqual(req.headers.get("x-secret") ?? "", await inboundSecret())) return err("Interdit", 403);
 
   const to = (req.headers.get("x-to") ?? "").toLowerCase().trim();
   const { data: mb } = await admin.from("mailboxes").select("id, expires_at").eq("address", to).maybeSingle();

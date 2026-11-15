@@ -8,14 +8,14 @@
 // En-tête obligatoire : x-secret = INBOUND_SECRET
 // Déploiement : supabase functions deploy inbound-sms --no-verify-jwt
 // =========================================================
-import { admin, cors, err, json, safeEqual, sha256 } from "../_shared/util.ts";
+import { admin, cors, err, inboundSecret, json, safeEqual, sha256 } from "../_shared/util.ts";
 
 const normalize = (n: string) => "+" + String(n ?? "").replace(/\D/g, "");
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return err("Méthode non autorisée", 405);
-  if (!safeEqual(req.headers.get("x-secret") ?? "", Deno.env.get("INBOUND_SECRET") ?? "")) return err("Interdit", 403);
+  if (!safeEqual(req.headers.get("x-secret") ?? "", await inboundSecret())) return err("Interdit", 403);
 
   const p = await req.json().catch(() => null);
   if (!p?.to) return err("Champ 'to' manquant");

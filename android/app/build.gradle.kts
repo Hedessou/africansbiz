@@ -8,6 +8,10 @@ plugins {
 // Vides = l'application démarre en mode démo.
 val supabaseUrl = System.getenv("SUPABASE_URL") ?: ""
 val supabaseAnonKey = System.getenv("SUPABASE_ANON_KEY") ?: ""
+// AdMob : identifiants de TEST de Google par défaut (aucun revenu, aucun risque).
+// Remplace-les par les tiens via les secrets GitHub ADMOB_APP_ID et ADMOB_REWARDED.
+val admobAppId = System.getenv("ADMOB_APP_ID")?.takeIf { it.isNotBlank() } ?: "ca-app-pub-3940256099942544~3347511713"
+val admobRewarded = System.getenv("ADMOB_REWARDED")?.takeIf { it.isNotBlank() } ?: "ca-app-pub-3940256099942544/5224354917"
 
 android {
     namespace = "com.africansbiz.app"
@@ -21,6 +25,8 @@ android {
         versionName = "1.0." + (System.getenv("GITHUB_RUN_NUMBER") ?: "0")
         buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
         buildConfigField("String", "SUPABASE_ANON_KEY", "\"$supabaseAnonKey\"")
+        buildConfigField("String", "ADMOB_REWARDED", "\"$admobRewarded\"")
+        manifestPlaceholders["admobAppId"] = admobAppId
     }
 
     buildTypes {
@@ -53,5 +59,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("com.google.android.gms:play-services-ads:23.6.0")
     debugImplementation("androidx.compose.ui:ui-tooling")
 }

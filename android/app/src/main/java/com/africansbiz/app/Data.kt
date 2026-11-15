@@ -34,12 +34,27 @@ data class Order(
 data class ChatMessage(val id: String, val sender: String, val body: String, val createdAt: String)
 data class PayNetwork(val code: String, val name: String)
 data class PayStart(val paymentId: String, val instructions: String, val otpAfterPush: Boolean, val checkoutUrl: String?)
-data class Me(val email: String?, val plan: String, val credits: Int, val role: String)
+data class Me(val email: String?, val plan: String, val credits: Int, val role: String, val planUntil: String? = null) {
+    val vip get() = plan != "free"
+}
 data class Mailbox(val address: String, val token: String, val expiresAt: String, val createdMs: Long)
 data class Mail(val id: String, val from: String, val subject: String, val html: String, val text: String, val receivedAt: String)
-data class Phone(val id: String, val e164: String, val country: String, val sms24h: Int, val lastSmsAt: String?)
+data class Phone(val id: String, val e164: String, val country: String, val sms24h: Int, val lastSmsAt: String?, val rentedUntil: String? = null)
 data class Sms(val sender: String, val body: String, val receivedAt: String)
-data class Session(val access: String, val refresh: String, val expiresAt: Long, val email: String)
+data class Session(val access: String, val refresh: String, val expiresAt: Long, val email: String) {
+    // Identifiant Supabase de l'utilisateur (champ "sub" du jeton), utilisé pour les récompenses vidéo
+    fun userId(): String? = try {
+        val part = access.split(".")[1]
+        JSONObject(String(android.util.Base64.decode(part, android.util.Base64.URL_SAFE or android.util.Base64.NO_PADDING or android.util.Base64.NO_WRAP))).optString("sub").ifBlank { null }
+    } catch (_: Exception) { null }
+}
+data class Annonce(val titre: String, val texte: String, val url: String)
+data class Pack(val id: String, val nom: String, val prix: Int, val duree: String, val avantages: List<String>)
+val PACKS = listOf(
+    Pack("bronze", "Bronze", 500, "7 jours", listOf("Sans publicité", "Email valable 24 heures", "Adresse personnalisée", "3 numéros privés")),
+    Pack("argent", "Argent", 2000, "30 jours", listOf("Tout Bronze", "Email valable 7 jours", "15 numéros privés")),
+    Pack("or", "Or", 5000, "30 jours", listOf("Tout Argent", "50 numéros privés", "Plusieurs adresses à la fois")),
+)
 
 class ApiException(message: String) : Exception(message)
 
@@ -109,6 +124,9 @@ interface Backend {
     suspend fun payOrder(id: String, network: String, phone: String, name: String): PayStart
     suspend fun payStatus(paymentId: String): String
     suspend fun payOtp(paymentId: String, otp: String)
+    suspend fun payPack(pack: String, network: String, phone: String, name: String): PayStart
+    suspend fun rent(country: String): Phone
+    suspend fun annonce(): Annonce?
     suspend fun createMailbox(): Mailbox
     suspend fun mails(box: Mailbox): List<Mail>
     suspend fun phones(): List<Phone>
@@ -207,7 +225,7 @@ class RealBackend(private val url: String, private val anon: String, private val
         val s = Session(j.str("access_token"), j.str("refresh_token"), j.optLong("expires_at"), email)
         session = s; store.save(s); return s
     }
-    override suspend fun me(): Me { val j = api("GET", "/me"); return Me(j.strOrNull("email"), j.optString("plan", "free"), j.optInt("credits"), j.optString("role", "client")) }
+    override suspend fun me(): Me { val j = api("GET", "/me"); return Me(j.strOrNull("email"), j.optString("plan", "free"), j.optInt("credits"), j.optString("role", "client"), j.strOrNull("plan_until")) }
     override suspend fun services() = api("GET", "/services").getJSONArray("services").objects().map(::parseService)
     override suspend fun createOrder(serviceId: String, brief: String, answers: Map<String, String>, whatsapp: String): Order {
         val b = JSONObject().put("service_id", serviceId).put("brief", brief).put("answers", JSONObject(answers as Map<*, *>)).put("whatsapp", whatsapp)
@@ -229,6 +247,18 @@ class RealBackend(private val url: String, private val anon: String, private val
     }
     override suspend fun payStatus(paymentId: String) = api("GET", "/pay/status?id=" + URLEncoder.encode(paymentId, "UTF-8")).optString("status", "PENDING")
     override suspend fun payOtp(paymentId: String, otp: String) { api("POST", "/pay/otp", JSONObject().put("payment_id", paymentId).put("otp", otp)) }
+    override suspend fun payPack(pack: String, network: String, phone: String, name: String): PayStart {
+        val j = api("POST", "/pay/init", JSONObject().put("pack", pack).put("network", network).put("phone", phone).put("full_name", name).put("country", "BJ"))
+        return PayStart(j.str("payment_id"), j.str("instructions"), j.optBoolean("otp_after_push"), j.strOrNull("checkout_url"))
+    }
+    override suspend fun rent(country: String): Phone {
+        val n = api("POST", "/rent", JSONObject().put("country", country)).getJSONObject("number")
+        return Phone(n.str("id"), n.str("e164"), n.str("country"), 0, null, n.strOrNull("rented_until"))
+    }
+    override suspend fun annonce(): Annonce? {
+        val a = api("GET", "/annonces/servir").optJSONObject("annonce") ?: return null
+        return Annonce(a.str("titre"), a.str("texte"), a.str("url"))
+    }
     override suspend fun createMailbox(): Mailbox {
         val j = api("POST", "/mailbox", JSONObject())
         return Mailbox(j.str("address"), j.str("token"), j.str("expires_at"), System.currentTimeMillis())
@@ -274,7 +304,8 @@ class DemoBackend : Backend {
 
     override suspend fun sendCode(email: String) { delay(400) }
     override suspend fun verifyCode(email: String, code: String): Session { delay(300); return Session("demo", "", Long.MAX_VALUE, email) }
-    override suspend fun me() = Me("toi@africansbiz.com", "free", 0, "admin")
+    var plan = "free"; var credits = 0
+    override suspend fun me() = Me("toi@africansbiz.com", plan, credits, "admin")
     override suspend fun services() = services
     override suspend fun createOrder(serviceId: String, brief: String, answers: Map<String, String>, whatsapp: String): Order {
         delay(400); val s = services.first { it.id == serviceId }
@@ -297,10 +328,26 @@ class DemoBackend : Backend {
         delay(600); val p = "P" + System.currentTimeMillis(); paiement = Triple(p, id, System.currentTimeMillis())
         return PayStart(p, "Démo : le paiement sera confirmé dans 5 secondes.", false, null)
     }
+    override suspend fun payPack(pack: String, network: String, phone: String, name: String): PayStart {
+        delay(600); val p = "P" + System.currentTimeMillis(); paiement = Triple(p, "pack:$pack", System.currentTimeMillis())
+        return PayStart(p, "Démo : le paiement sera confirmé dans 5 secondes.", false, null)
+    }
+    override suspend fun rent(country: String): Phone {
+        delay(500)
+        if (credits <= 0) throw ApiException(if (plan == "free") "Location réservée aux VIP. Astuce : regarde une vidéo pour gagner un crédit" else "Plus de locations disponibles sur ton pack")
+        credits--
+        return Phone("R" + System.currentTimeMillis(), "+229019" + Random.nextInt(1000000, 9999999), country, 0, null, nowIso(-20))
+    }
+    override suspend fun annonce(): Annonce? = null
     override suspend fun payStatus(paymentId: String): String {
         val p = paiement ?: return "FAILED"
         if (p.first != paymentId) return "FAILED"
         if (System.currentTimeMillis() - p.third < 5000) return "PENDING"
+        if (p.second.startsWith("pack:")) {
+            val pk = p.second.removePrefix("pack:")
+            if (plan != pk) { plan = pk; credits += mapOf("bronze" to 3, "argent" to 15, "or" to 50)[pk] ?: 0 }
+            return "SUCCESS"
+        }
         val c = find(p.second)
         if (c.o.status == "a_payer") { c.o = c.o.copy(status = "payee"); event(c, "status", "Paiement confirmé", "Mobile Money") }
         return "SUCCESS"
