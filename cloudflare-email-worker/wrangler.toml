@@ -1,0 +1,7 @@
+name = "africansbiz-email"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+INBOUND_URL = "https://VOTRE-PROJET.supabase.co/functions/v1/inbound-email"
+# INBOUND_SECRET : à ajouter avec  npx wrangler secret put INBOUND_SECRET

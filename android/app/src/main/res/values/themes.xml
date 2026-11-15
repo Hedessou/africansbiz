@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.AfricansBiz" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/ivoire</item>
+        <item name="android:statusBarColor">@color/ivoire</item>
+        <item name="android:navigationBarColor">@color/ivoire</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+    <color name="ivoire">#F7F3EA</color>
+</resources>

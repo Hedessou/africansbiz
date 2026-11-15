@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sceau AfricansBiz : « A » en laiton sur indigo -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#23306E" android:pathData="M5,0h14a5,5 0,0 1,5 5v14a5,5 0,0 1,-5 5h-14a5,5 0,0 1,-5 -5v-14a5,5 0,0 1,5 -5z"/>
+    <path android:fillColor="#E2B65A" android:pathData="M12,4.5L6.2,19.5h2.4l1.2,-3h4.4l1.2,3h2.4z"/>
+    <path android:fillColor="#23306E" android:pathData="M10.6,14.6L12,10.9l1.4,3.7z"/>
+</vector>

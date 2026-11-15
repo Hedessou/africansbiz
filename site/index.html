@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AfricansBiz — Ton atelier numérique africain</title>
+<meta name="description" content="Commande ton site, ton application Android, ton robot WhatsApp ou ta chaîne vidéo. Suivi de livraison, chat sécurisé et paiement Mobile Money sans quitter AfricansBiz.">
+<meta name="theme-color" content="#23306E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   AfricansBiz — système de design
+   Indigo des pagnes teints · laiton des bronzes d'Abomey ·
+   ivoire du coton · palme (livré) · latérite (erreur)
+   ========================================================= */
+:root{
+  /* surfaces (ivoire) */
+  --ivoire:#F7F3EA; --ivoire-bas:#F1EBDF; --ivoire-moyen:#EAE2D3; --carte:#FFFDF8; --champ:#F2ECE1;
+  /* encre */
+  --encre:#161A2E; --encre-2:#474C63; --encre-3:#666B81;
+  /* marque */
+  --indigo:#23306E; --sur-indigo:#FFFFFF; --indigo-pale:#DDE1F6; --sur-indigo-pale:#101848;
+  --laiton:#B8862B; --laiton-texte:#8A5F12; --laiton-pale:#F3E3BE; --sur-laiton-pale:#3B2900;
+  --palme:#2E6B4E; --palme-pale:#D6EBDD; --laterite:#B3402A; --laterite-pale:#F6DCD5;
+  /* traits */
+  --trait:rgba(22,26,46,.09); --trait-fort:rgba(22,26,46,.18); --contour:rgba(22,26,46,.30);
+  --anneau:0 0 0 1px rgba(22,26,46,.06), 0 1px 2px -1px rgba(22,26,46,.08), 0 2px 6px rgba(22,26,46,.05);
+  --anneau-haut:0 0 0 1px rgba(22,26,46,.06), 0 8px 24px -6px rgba(22,26,46,.18);
+  /* formes (MD3) */
+  --r-xs:4px; --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:28px; --r-full:999px;
+  /* type */
+  --titre:'Bricolage Grotesque',system-ui,sans-serif; --texte:'Roboto Flex',system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+  /* mouvement */
+  --sortie:cubic-bezier(.23,1,.32,1); --emph:cubic-bezier(.2,0,0,1);
+  --barre-bas:0px;
+}
+[data-theme="dark"]{
+  --ivoire:#0E1124; --ivoire-bas:#131733; --ivoire-moyen:#1A1F40; --carte:#171B38; --champ:#0B0E1F;
+  --encre:#ECE8DF; --encre-2:#B4B3C2; --encre-3:#8D8EA3;
+  --indigo:#B9C3FF; --sur-indigo:#14205A; --indigo-pale:#2A3470; --sur-indigo-pale:#DDE1FF;
+  --laiton:#E2B65A; --laiton-texte:#E2B65A; --laiton-pale:#4A3712; --sur-laiton-pale:#FFE3A8;
+  --palme:#7FD1A6; --palme-pale:#183B2B; --laterite:#FFB4A3; --laterite-pale:#4B2017;
+  --trait:rgba(236,232,223,.08); --trait-fort:rgba(236,232,223,.14); --contour:rgba(236,232,223,.30);
+  --anneau:0 0 0 1px rgba(236,232,223,.07); --anneau-haut:0 0 0 1px rgba(236,232,223,.10), 0 12px 32px -8px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--texte);font-size:15px;line-height:1.55;background:var(--ivoire);color:var(--encre);-webkit-font-smoothing:antialiased;padding-bottom:var(--barre-bas)}
+a{color:var(--indigo);text-underline-offset:3px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,textarea,select{font:inherit;color:var(--encre)}
+svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.hide{display:none!important}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+h1,h2,h3{font-family:var(--titre);letter-spacing:-.02em;line-height:1.12;text-wrap:balance}
+p{text-wrap:pretty}
+.sur-titre{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--laiton-texte)}
+.muet{color:var(--encre-3)} .second{color:var(--encre-2)} .petit{font-size:13px}
+:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- barre d'application ---------- */
+.barre{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--ivoire) 86%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--trait)}
+.barre .wrap{display:flex;align-items:center;gap:16px;height:64px}
+.marque{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--encre);font-family:var(--titre);font-weight:800;font-size:20px;letter-spacing:-.03em}
+.marque b{color:var(--laiton-texte);font-weight:800}
+.sceau{width:34px;height:34px;border-radius:10px;background:#23306E;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);display:grid;place-items:center}
+.sceau svg{width:20px;height:20px}
+.nav-haut{display:flex;gap:2px;margin-left:12px}
+.nav-haut a{padding:8px 12px;border-radius:var(--r-full);text-decoration:none;color:var(--encre-2);font-weight:500;font-size:14px;transition:background .15s}
+.nav-haut a:hover{background:var(--ivoire-moyen);color:var(--encre)}
+.nav-haut a.on{background:var(--indigo-pale);color:var(--sur-indigo-pale)}
+.barre .droite{margin-left:auto;display:flex;align-items:center;gap:6px}
+.icone-btn{width:40px;height:40px;border-radius:var(--r-full);display:grid;place-items:center;color:var(--encre-2);position:relative}
+.icone-btn:hover{background:var(--ivoire-moyen);color:var(--encre)}
+.pastille{position:absolute;top:6px;right:6px;min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:var(--laterite);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center}
+.vip-tag{font-size:11px;font-weight:700;letter-spacing:.06em;padding:3px 9px;border-radius:99px;background:var(--laiton-pale);color:var(--sur-laiton-pale)}
+@media (max-width:820px){.nav-haut{display:none}}
+
+/* barre de navigation du bas (MD3) */
+.nav-bas{display:none}
+@media (max-width:820px){
+  :root{--barre-bas:76px}
+  .nav-bas{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:30;height:76px;background:var(--ivoire-bas);border-top:1px solid var(--trait);padding:8px 4px calc(8px + env(safe-area-inset-bottom))}
+  .nav-bas a{display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--encre-2);font-size:12px;font-weight:500;position:relative}
+  .nav-bas a span.ind{width:56px;height:30px;border-radius:99px;display:grid;place-items:center;transition:background .2s var(--sortie)}
+  .nav-bas a.on{color:var(--encre)}
+  .nav-bas a.on span.ind{background:var(--indigo-pale);color:var(--sur-indigo-pale)}
+  .nav-bas .pastille{top:-2px;right:calc(50% - 26px)}
+}
+
+/* ---------- boutons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;height:44px;padding:0 20px;border-radius:var(--r-full);font-weight:600;font-size:14.5px;transition:transform .12s var(--sortie),background .15s,box-shadow .15s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.45;pointer-events:none}
+.btn-plein{background:var(--indigo);color:var(--sur-indigo)}
+.btn-plein:hover{box-shadow:0 2px 10px -2px color-mix(in srgb,var(--indigo) 60%,transparent)}
+.btn-tonal{background:var(--indigo-pale);color:var(--sur-indigo-pale)}
+.btn-laiton{background:var(--laiton);color:#1E1400}
+.btn-contour{border:1px solid var(--contour);color:var(--encre)}
+.btn-contour:hover{background:var(--ivoire-moyen)}
+.btn-texte{color:var(--indigo);padding:0 12px}
+.btn-petit{height:36px;padding:0 14px;font-size:13.5px}
+.btn-large{width:100%}
+.spin{width:18px;height:18px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:tourne .7s linear infinite}
+@keyframes tourne{to{transform:rotate(360deg)}}
+
+/* ---------- surfaces ---------- */
+.carte{background:var(--carte);border-radius:var(--r-lg);box-shadow:var(--anneau)}
+.puce{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:var(--r-sm);border:1px solid var(--contour);font-size:13.5px;font-weight:500;color:var(--encre-2);white-space:nowrap;flex:none}
+.puce.on{background:var(--indigo-pale);border-color:transparent;color:var(--sur-indigo-pale)}
+.puces{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0 6px}
+.statut{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.statut::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.s-devis{background:var(--ivoire-moyen);color:var(--encre-2)}
+.s-a_payer{background:var(--laiton-pale);color:var(--sur-laiton-pale)}
+.s-payee,.s-en_cours{background:var(--indigo-pale);color:var(--sur-indigo-pale)}
+.s-validation{background:var(--laiton-pale);color:var(--sur-laiton-pale)}
+.s-livree{background:var(--palme-pale);color:var(--palme)}
+.s-annulee{background:var(--laterite-pale);color:var(--laterite)}
+.pub{margin:28px 0;border:1px dashed var(--trait-fort);border-radius:var(--r-md);min-height:96px;display:grid;place-items:center;color:var(--encre-3);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+body.vip .pub{display:none}
+
+/* ---------- vues ---------- */
+.vue{display:none;animation:entre .28s var(--sortie)}
+.vue.on{display:block}
+@keyframes entre{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.entete-vue{padding:36px 0 20px}
+.entete-vue h1{font-size:clamp(28px,4.4vw,40px);font-weight:800}
+.entete-vue p{color:var(--encre-2);margin-top:8px;max-width:620px}
+
+/* ---------- accueil ---------- */
+.heros{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:center;min-height:min(640px,calc(100svh - 64px));padding:28px 0}
+.heros h1{font-size:clamp(38px,6.4vw,72px);font-weight:800;letter-spacing:-.035em;line-height:1.02}
+.heros h1 em{font-style:normal;color:var(--laiton-texte)}
+.heros p.chapo{font-size:17.5px;color:var(--encre-2);max-width:520px;margin:18px 0 26px;line-height:1.6}
+.heros .actions{display:flex;flex-wrap:wrap;gap:10px}
+.villes{margin-top:26px;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--encre-3)}
+.villes span::before{content:"◆";color:var(--laiton);font-size:8px;margin-right:6px;vertical-align:2px}
+.scene{position:relative;aspect-ratio:1;width:100%;max-width:560px;justify-self:center}
+.scene canvas{width:100%!important;height:100%!important;display:block;touch-action:pan-y}
+.scene .repli{position:absolute;inset:10%;border-radius:50%;background:radial-gradient(circle,var(--indigo) 1.2px,transparent 1.8px) 0 0/13px 13px;-webkit-mask:radial-gradient(circle at 38% 35%,#000 0,rgba(0,0,0,.75) 45%,rgba(0,0,0,.15) 72%);mask:radial-gradient(circle at 38% 35%,#000 0,rgba(0,0,0,.75) 45%,rgba(0,0,0,.15) 72%);opacity:.7}
+.scene .etiquette{position:absolute;left:6%;bottom:8%;background:var(--carte);box-shadow:var(--anneau-haut);border-radius:var(--r-md);padding:10px 14px;font-size:13px;display:flex;gap:10px;align-items:center}
+.scene .etiquette b{font-family:var(--mono);font-size:12px;color:var(--laiton-texte)}
+@media (max-width:820px){.heros{grid-template-columns:1fr;min-height:0;padding-top:20px}.scene{max-width:360px;order:-1;margin:-6px auto -20px}}
+
+.section{padding:56px 0 8px}
+.section-t{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}
+.section-t h2{font-size:clamp(24px,3.6vw,34px);font-weight:800}
+.section-t p{color:var(--encre-2);margin-top:6px;max-width:560px}
+
+/* chemin de commande : fil de perles */
+.chemin{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;counter-reset:etape}
+.chemin::before{content:"";position:absolute;left:12.5%;right:12.5%;top:21px;height:2px;background:repeating-linear-gradient(90deg,var(--laiton) 0 6px,transparent 6px 10px)}
+.etape{text-align:center;padding:0 10px;position:relative}
+.etape .perle{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;background:var(--carte);box-shadow:0 0 0 2px var(--laiton),var(--anneau);display:grid;place-items:center;color:var(--laiton-texte);position:relative;z-index:1}
+.etape h3{font-size:17px;font-weight:700;margin-bottom:4px}
+.etape p{font-size:13.5px;color:var(--encre-2)}
+@media (max-width:820px){.chemin{grid-template-columns:1fr;gap:18px}.chemin::before{left:21px;right:auto;top:22px;bottom:22px;width:2px;height:auto;background:repeating-linear-gradient(180deg,var(--laiton) 0 6px,transparent 6px 10px)}.etape{display:grid;grid-template-columns:44px 1fr;gap:14px;text-align:left;padding:0}.etape .perle{margin:0}}
+
+.familles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.famille{padding:22px;display:flex;flex-direction:column;gap:10px;text-decoration:none;color:inherit;transition:box-shadow .2s var(--sortie),transform .2s var(--sortie)}
+.famille:hover{box-shadow:var(--anneau-haut);transform:translateY(-2px)}
+.famille .ic{width:44px;height:44px;border-radius:var(--r-md);background:var(--indigo-pale);color:var(--sur-indigo-pale);display:grid;place-items:center}
+.famille h3{font-size:19px;font-weight:700}
+.famille p{font-size:14px;color:var(--encre-2);flex:1}
+.famille .liste{font-size:13px;color:var(--encre-3)}
+.famille.grande{grid-column:span 2;background:var(--indigo);color:var(--sur-indigo)}
+.famille.grande p,.famille.grande .liste{color:color-mix(in srgb,var(--sur-indigo) 78%,transparent)}
+.famille.grande .ic{background:color-mix(in srgb,var(--sur-indigo) 14%,transparent);color:var(--sur-indigo)}
+@media (max-width:820px){.familles{grid-template-columns:1fr}.famille.grande{grid-column:auto}}
+
+.garanties{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.garantie{padding:20px;display:flex;gap:14px}
+.garantie .ic{color:var(--laiton-texte)}
+.garantie h3{font-family:var(--texte);font-size:15.5px;font-weight:600;letter-spacing:0;margin-bottom:3px}
+.garantie p{font-size:13.5px;color:var(--encre-2)}
+@media (max-width:820px){.garanties{grid-template-columns:1fr}}
+
+details.faq{border-bottom:1px solid var(--trait);padding:16px 2px}
+details.faq summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+details.faq summary::after{content:"+";color:var(--laiton-texte);font-size:22px;line-height:1}
+details.faq[open] summary::after{content:"–"}
+details.faq p{color:var(--encre-2);font-size:14.5px;margin-top:8px}
+
+/* ---------- catalogue ---------- */
+.services{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:10px}
+.service{padding:20px;display:flex;flex-direction:column;gap:12px}
+.service .haut{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.service .fam{font-size:12px;font-weight:600;color:var(--laiton-texte);letter-spacing:.06em;text-transform:uppercase}
+.service h3{font-size:18px;font-weight:700;margin-top:2px}
+.service p{font-size:14px;color:var(--encre-2);flex:1}
+.service .bas{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:12px;border-top:1px solid var(--trait)}
+.prix{font-family:var(--titre);font-weight:700;font-size:19px;font-variant-numeric:tabular-nums}
+.prix small{display:block;font-family:var(--texte);font-weight:500;font-size:12px;color:var(--encre-3)}
+.delai{font-size:12px;color:var(--encre-3);white-space:nowrap}
+
+/* ---------- bordereau (commande) ---------- */
+.bordereaux{display:grid;gap:12px}
+.bordereau{position:relative;display:grid;grid-template-columns:1fr auto;gap:6px 16px;padding:18px 20px 18px 26px;text-align:left;width:100%;transition:box-shadow .2s var(--sortie)}
+.bordereau:hover{box-shadow:var(--anneau-haut)}
+/* bord perforé à gauche */
+.bordereau::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:8px;background:radial-gradient(circle at 0 50%,var(--ivoire) 3.5px,transparent 4px) 0 0/8px 12px repeat-y}
+.bordereau::after{content:"";position:absolute;left:13px;top:14px;bottom:14px;border-left:1.5px dashed var(--trait-fort)}
+.bordereau .ref{font-family:var(--mono);font-size:12px;color:var(--encre-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bordereau h3{font-size:17px;font-weight:700;margin:2px 0}
+.bordereau .montant{font-family:var(--mono);font-weight:600;font-size:15px;text-align:right;align-self:start}
+.bordereau .ligne{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.non-lu{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--laterite)}
+
+/* fil de perles (suivi) */
+.fil{display:flex;align-items:center;gap:0;margin:4px 0}
+.fil .p{width:12px;height:12px;border-radius:50%;background:var(--ivoire-moyen);box-shadow:inset 0 0 0 1.5px var(--trait-fort);flex:none}
+.fil .p.fait{background:var(--laiton);box-shadow:none}
+.fil .p.ici{background:var(--carte);box-shadow:0 0 0 2px var(--laiton),0 0 0 6px color-mix(in srgb,var(--laiton) 22%,transparent)}
+.fil .t{height:2px;flex:1;min-width:10px;background:var(--trait-fort)}
+.fil .t.fait{background:var(--laiton)}
+.fil.grand .p{width:18px;height:18px}
+.fil-noms{display:flex;justify-content:space-between;font-size:11.5px;color:var(--encre-3);margin-top:8px}
+.fil-noms span{flex:1;text-align:center}.fil-noms span:first-child{text-align:left}.fil-noms span:last-child{text-align:right}
+.fil-noms span.ici{color:var(--encre);font-weight:600}
+@media (max-width:600px){.fil-noms span{display:none}.fil-noms span.ici{display:block;text-align:left}.fil-noms span.ici::before{content:attr(data-n) " · ";color:var(--encre-3);font-weight:500}}
+
+/* détail de commande */
+.detail{display:grid;grid-template-columns:1fr 400px;gap:16px;align-items:start}
+@media (max-width:980px){.detail{grid-template-columns:1fr}}
+.retour{display:inline-flex;align-items:center;gap:6px;color:var(--encre-2);font-weight:500;margin:20px 0 10px;height:40px}
+.bloc{padding:20px}
+.bloc h2{font-size:15px;font-family:var(--texte);font-weight:600;letter-spacing:0;margin-bottom:12px;color:var(--encre-2)}
+.action-requise{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-radius:var(--r-md);background:var(--laiton-pale);color:var(--sur-laiton-pale);margin-top:16px}
+.action-requise b{font-family:var(--titre);font-size:17px}
+.evenements{list-style:none;position:relative}
+.evenements li{display:grid;grid-template-columns:20px 1fr;gap:12px;padding-bottom:16px;position:relative}
+.evenements li::before{content:"";position:absolute;left:9px;top:18px;bottom:0;border-left:1.5px solid var(--trait-fort)}
+.evenements li:last-child::before{display:none}
+.evenements .pt{width:20px;height:20px;border-radius:50%;background:var(--ivoire-moyen);display:grid;place-items:center;color:var(--encre-2)}
+.evenements .pt svg{width:12px;height:12px}
+.evenements li.livr .pt{background:var(--palme-pale);color:var(--palme)}
+.evenements .q{font-size:12px;color:var(--encre-3)}
+.livrable{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-md);background:var(--palme-pale);color:var(--palme);text-decoration:none;font-weight:600;margin-bottom:8px;word-break:break-all}
+.brief{white-space:pre-wrap;font-size:14.5px;color:var(--encre-2)}
+.reponses{display:grid;gap:8px;margin-top:12px;font-size:14px}
+.reponses div{display:grid;grid-template-columns:150px 1fr;gap:10px}
+.reponses dt{color:var(--encre-3)}
+
+/* chat sécurisé */
+.chat{display:flex;flex-direction:column;height:min(640px,calc(100svh - 150px));position:sticky;top:80px;overflow:hidden}
+.chat-h{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--trait)}
+.chat-h .cadenas{width:34px;height:34px;border-radius:50%;background:var(--palme-pale);color:var(--palme);display:grid;place-items:center}
+.chat-h b{display:block;font-size:14.5px}
+.chat-h span{font-size:12px;color:var(--encre-3)}
+.fil-msg{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:6px;background:var(--ivoire-bas)}
+.msg{max-width:82%;padding:9px 13px;border-radius:16px;font-size:14.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.msg .h{display:block;font-size:11px;margin-top:3px;opacity:.7;text-align:right}
+.msg.moi{align-self:flex-end;background:var(--indigo);color:var(--sur-indigo);border-bottom-right-radius:5px}
+.msg.lui{align-self:flex-start;background:var(--carte);box-shadow:var(--anneau);border-bottom-left-radius:5px}
+.msg.sys{align-self:center;background:none;color:var(--encre-3);font-size:12px;text-align:center}
+.jour{align-self:center;font-size:11.5px;color:var(--encre-3);margin:8px 0}
+.saisie{display:flex;gap:8px;padding:10px;border-top:1px solid var(--trait);background:var(--carte)}
+.saisie textarea{flex:1;resize:none;border:0;background:var(--champ);border-radius:22px;padding:11px 16px;max-height:120px;outline:none;line-height:1.4}
+.saisie button{width:44px;height:44px;border-radius:50%;background:var(--indigo);color:var(--sur-indigo);display:grid;place-items:center;flex:none}
+.onglets-detail{display:none}
+@media (max-width:980px){
+  .chat{position:static;height:calc(100svh - 64px - var(--barre-bas) - 120px)}
+  .onglets-detail{display:flex;gap:6px;background:var(--ivoire-moyen);padding:4px;border-radius:var(--r-full);margin-bottom:12px}
+  .onglets-detail button{flex:1;height:38px;border-radius:var(--r-full);font-weight:600;font-size:14px;color:var(--encre-2);position:relative}
+  .onglets-detail button.on{background:var(--carte);color:var(--encre);box-shadow:var(--anneau)}
+  .detail[data-onglet="suivi"] .col-chat{display:none}
+  .detail[data-onglet="chat"] .col-suivi{display:none}
+}
+
+/* admin */
+.admin-outils{display:grid;gap:10px;margin-top:6px}
+.admin-outils .rangee{display:flex;gap:8px;flex-wrap:wrap}
+.admin-outils input,.admin-outils select{flex:1;min-width:120px}
+
+/* ---------- champs ---------- */
+.champ{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.champ label{font-size:13px;font-weight:500;color:var(--encre-2)}
+.champ .aide{font-size:12px;color:var(--encre-3)}
+input.c,textarea.c,select.c{width:100%;background:var(--champ);border:1px solid transparent;border-radius:var(--r-sm);padding:12px 14px;outline:none;transition:border-color .15s}
+input.c:focus,textarea.c:focus,select.c:focus{border-color:var(--indigo);background:var(--carte)}
+textarea.c{min-height:110px;resize:vertical}
+.code-otp{font-family:var(--mono);font-size:26px;letter-spacing:.5em;text-align:center}
+.reseaux{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.reseau{height:52px;border-radius:var(--r-md);border:1px solid var(--contour);font-weight:600;font-size:13.5px;padding:0 6px}
+.reseau.on{border-color:var(--indigo);background:var(--indigo-pale);color:var(--sur-indigo-pale);box-shadow:inset 0 0 0 1px var(--indigo)}
+
+/* ---------- feuilles (bottom sheet / dialogue) ---------- */
+.voile{position:fixed;inset:0;z-index:60;background:rgba(10,12,26,.5);display:none;align-items:flex-end;justify-content:center}
+.voile.on{display:flex}
+.feuille{background:var(--carte);width:100%;max-width:560px;max-height:92svh;overflow-y:auto;border-radius:var(--r-xl) var(--r-xl) 0 0;padding:8px 22px 24px;animation:monte .32s var(--emph)}
+.feuille .poignee{width:32px;height:4px;border-radius:2px;background:var(--trait-fort);margin:6px auto 14px}
+@media (min-width:700px){.voile{align-items:center}.feuille{border-radius:var(--r-xl);padding:20px 26px 26px}.feuille .poignee{display:none}}
+@keyframes monte{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.feuille-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}
+.feuille-h h3{font-size:21px;font-weight:700}
+.recap{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-radius:var(--r-md);background:var(--ivoire-bas);margin-bottom:16px}
+.attente{text-align:center;padding:8px 0}
+.attente .anneau-attente{width:64px;height:64px;margin:6px auto 16px;border-radius:50%;border:3px solid var(--indigo-pale);border-top-color:var(--indigo);animation:tourne 1s linear infinite}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + var(--barre-bas));transform:translate(-50%,16px);opacity:0;background:var(--encre);color:var(--ivoire);padding:12px 18px;border-radius:var(--r-sm);font-size:14px;font-weight:500;z-index:90;transition:opacity .2s,transform .25s var(--sortie);pointer-events:none;max-width:92vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.bandeau-demo{background:var(--laiton-pale);color:var(--sur-laiton-pale);font-size:13px;text-align:center;padding:7px 14px}
+.vide{padding:44px 20px;text-align:center;color:var(--encre-2)}
+.vide .ic{width:56px;height:56px;margin:0 auto 12px;border-radius:50%;background:var(--ivoire-moyen);display:grid;place-items:center;color:var(--encre-3)}
+.vide h3{color:var(--encre);font-size:18px;margin-bottom:6px}
+
+/* ---------- outils ---------- */
+.onglets{display:flex;gap:4px;background:var(--ivoire-moyen);padding:4px;border-radius:var(--r-full);max-width:460px;margin-bottom:18px}
+.onglets button{flex:1;height:40px;border-radius:var(--r-full);font-weight:600;font-size:14px;color:var(--encre-2)}
+.onglets button.on{background:var(--carte);color:var(--encre);box-shadow:var(--anneau)}
+.adresse{font-family:var(--mono);font-size:clamp(16px,4vw,22px);padding:16px 18px;border-radius:var(--r-md);background:var(--champ);word-break:break-all;text-align:center;user-select:all}
+.compte-a-rebours{font-size:13px;color:var(--encre-3);text-align:center}
+.compte-a-rebours b{font-family:var(--mono);color:var(--encre)}
+.mail{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;padding:14px 18px;border-top:1px solid var(--trait);width:100%;text-align:left}
+.mail:hover{background:var(--ivoire-bas)}
+.mail .av{width:40px;height:40px;border-radius:50%;background:var(--indigo-pale);color:var(--sur-indigo-pale);display:grid;place-items:center;font-weight:700}
+.mail .s{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mail .f{font-size:12.5px;color:var(--encre-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mail.neuf .s::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--laiton);margin-right:8px;vertical-align:1px}
+.direct{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--palme);font-weight:500}
+.direct::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;animation:pouls 1.8s infinite}
+@keyframes pouls{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--palme) 50%,transparent)}100%{box-shadow:0 0 0 8px transparent}}
+.numeros{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.numero{padding:16px;display:flex;flex-direction:column;gap:12px}
+.numero .n{font-family:var(--mono);font-size:16px}
+.drapeau{font-size:26px;line-height:1}
+.sms{padding:14px 18px;border-top:1px solid var(--trait)}
+.sms .h{display:flex;justify-content:space-between;font-size:12.5px;color:var(--encre-3);margin-bottom:3px}
+.sms .h b{color:var(--encre)}
+.code{font-family:var(--mono);background:var(--laiton-pale);color:var(--sur-laiton-pale);padding:1px 6px;border-radius:5px;cursor:pointer}
+.packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.pack{padding:22px;display:flex;flex-direction:column;gap:12px}
+.pack.mis-en-avant{box-shadow:0 0 0 2px var(--laiton),var(--anneau)}
+.pack ul{list-style:none;font-size:14px;display:grid;gap:7px;flex:1}
+.pack li::before{content:"✓";color:var(--palme);font-weight:700;margin-right:8px}
+.pied{margin-top:64px;border-top:1px solid var(--trait);padding:28px 0 40px;color:var(--encre-3);font-size:13px}
+.pied .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+</style>
+</head>
+<body>
+<!-- Icônes -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-accueil" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-grille" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-bordereau" viewBox="0 0 24 24"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/></symbol>
+  <symbol id="i-outils" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.6 2.6-2.5-.6-.6-2.5z"/></symbol>
+  <symbol id="i-perso" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-envoi" viewBox="0 0 24 24"><path d="M4 12 20 4l-6 16-3-7z"/><path d="m11 13 9-9"/></symbol>
+  <symbol id="i-cadenas" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-copie" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
+  <symbol id="i-recharge" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></symbol>
+  <symbol id="i-soleil" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-lune" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></symbol>
+  <symbol id="i-fermer" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-retour" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-tel" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></symbol>
+  <symbol id="i-robot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/></symbol>
+  <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M12 15h5"/></symbol>
+  <symbol id="i-bouclier" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-argent" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9v.01M18 15v.01"/></symbol>
+  <symbol id="i-plume" viewBox="0 0 24 24"><path d="M20 4c-8 0-13 5-14 12l-2 4 4-2c7-1 12-6 12-14z"/><path d="M6 16 14 8"/></symbol>
+  <symbol id="i-paquet" viewBox="0 0 24 24"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="m3 7.5 9 4.5 9-4.5M12 12v9"/></symbol>
+  <symbol id="i-lien" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+  <symbol id="i-admin" viewBox="0 0 24 24"><path d="M4 21v-2a4 4 0 0 1 4-4h4"/><circle cx="10" cy="7" r="4"/><path d="m17 14 1 2 2 .3-1.5 1.4.4 2.1-1.9-1-1.9 1 .4-2.1-1.5-1.4 2-.3z"/></symbol>
+</svg>
+
+<div id="bandeauDemo" class="bandeau-demo hide">Mode démo : commandes, paiements et messages simulés. Remplis <span class="mono">CONFIG</span> pour passer en réel.</div>
+
+<header class="barre">
+  <div class="wrap">
+    <a class="marque" href="#accueil" aria-label="AfricansBiz, accueil">
+      <span class="sceau"><svg viewBox="0 0 24 24"><path d="M12 3 4 21h3.2l1.6-3.8h6.4l1.6 3.8H20z" fill="#E2B65A"/><path d="M10 14.2 12 9.4l2 4.8z" fill="#23306E"/></svg></span>
+      <span>Africans<b>Biz</b></span>
+    </a>
+    <nav class="nav-haut" aria-label="Navigation principale">
+      <a href="#services" data-nav="services">Services</a>
+      <a href="#commandes" data-nav="commandes">Mes commandes</a>
+      <a href="#outils" data-nav="outils">Outils</a>
+      <a href="#admin" data-nav="admin" class="hide" id="navAdmin">Administration</a>
+    </nav>
+    <div class="droite">
+      <span id="vipTag" class="vip-tag hide"></span>
+      <button class="icone-btn" id="btnTheme" aria-label="Changer de thème"><svg class="i"><use href="#i-lune"/></svg></button>
+      <button class="icone-btn" id="btnCompte" aria-label="Mon compte"><svg class="i"><use href="#i-perso"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- =================== ACCUEIL =================== -->
+<section class="vue on" id="v-accueil">
+  <div class="wrap">
+    <div class="heros">
+      <div>
+        <div class="sur-titre">L'atelier numérique de l'Afrique</div>
+        <h1 style="margin-top:14px">Tu commandes.<br>On construit.<br><em>Tu suis tout.</em></h1>
+        <p class="chapo">Sites web, applications Android, robots WhatsApp, chaînes vidéo automatiques… Commande en quelques minutes, suis chaque étape de la livraison et discute avec ton développeur dans un chat privé. Paiement Mobile Money, sans quitter AfricansBiz.</p>
+        <div class="actions">
+          <a class="btn btn-plein" href="#services">Voir les services</a>
+          <a class="btn btn-contour" href="#commandes">Suivre ma commande</a>
+        </div>
+        <div class="villes"><span>Cotonou</span><span>Lomé</span><span>Abidjan</span><span>Dakar</span><span>Lagos</span><span>Douala</span></div>
+      </div>
+      <div class="scene" id="scene" aria-hidden="true">
+        <div class="repli" id="repli"></div>
+        <div class="etiquette"><svg class="i" style="color:var(--palme)"><use href="#i-ok"/></svg><span>Commande <b>AB-2611-0042</b> livrée à Lomé</span></div>
+      </div>
+    </div>
+
+    <section class="section">
+      <div class="section-t"><div><div class="sur-titre">Comment ça marche</div><h2 style="margin-top:8px">Quatre étapes, aucune surprise</h2></div></div>
+      <div class="chemin">
+        <div class="etape"><div class="perle"><svg class="i"><use href="#i-plume"/></svg></div><div><h3>Commande</h3><p>Choisis un service et décris ton besoin en quelques lignes.</p></div></div>
+        <div class="etape"><div class="perle"><svg class="i"><use href="#i-argent"/></svg></div><div><h3>Paiement</h3><p>Prix fixe ou devis sous 24 h. Tu valides sur ton téléphone avec MTN, Moov ou Celtiis.</p></div></div>
+        <div class="etape"><div class="perle"><svg class="i"><use href="#i-bordereau"/></svg></div><div><h3>Suivi</h3><p>Chaque étape s'affiche sur ton bordereau. Tu poses tes questions dans le chat privé.</p></div></div>
+        <div class="etape"><div class="perle"><svg class="i"><use href="#i-paquet"/></svg></div><div><h3>Livraison</h3><p>Tu reçois ton travail, tu le testes et tu valides la livraison.</p></div></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-t"><div><div class="sur-titre">Ce qu'on fait</div><h2 style="margin-top:8px">Un seul endroit pour tout ton numérique</h2></div><a class="btn btn-texte" href="#services">Tout voir →</a></div>
+      <div class="familles" id="familles"></div>
+    </section>
+
+    <div class="pub" data-pub="accueil">Espace publicitaire</div>
+
+    <section class="section">
+      <div class="garanties">
+        <div class="carte garantie"><svg class="i ic"><use href="#i-cadenas"/></svg><div><h3>Chat privé par commande</h3><p>Seuls toi et ton développeur lisez la discussion, accessible uniquement après connexion.</p></div></div>
+        <div class="carte garantie"><svg class="i ic"><use href="#i-tel"/></svg><div><h3>Mobile Money intégré</h3><p>La demande de paiement arrive sur ton téléphone. Tu ne quittes jamais le site.</p></div></div>
+        <div class="carte garantie"><svg class="i ic"><use href="#i-bouclier"/></svg><div><h3>Tu valides la livraison</h3><p>La commande n'est terminée que quand tu confirmes que tout fonctionne.</p></div></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-t"><div><h2>Questions fréquentes</h2></div></div>
+      <div class="carte" style="padding:4px 20px">
+        <details class="faq"><summary>Combien de temps pour un devis ?</summary><p>Sous 24 h ouvrées. Le devis arrive dans ta commande et tu reçois une notification. Tu paies seulement si tu l'acceptes.</p></details>
+        <details class="faq"><summary>Comment je paie ?</summary><p>Choisis ton réseau (MTN, Moov, Celtiis), entre ton numéro et valide la demande qui apparaît sur ton téléphone. Pas de carte bancaire, pas de redirection.</p></details>
+        <details class="faq"><summary>Je peux demander des modifications ?</summary><p>Oui. Écris-les dans le chat de ta commande. La livraison n'est terminée que quand tu la valides.</p></details>
+        <details class="faq"><summary>L'application Android existe ?</summary><p>Oui : la même plateforme, sur ton téléphone. Ton compte, tes commandes et tes discussions sont synchronisés entre le site et l'application.</p></details>
+      </div>
+    </section>
+  </div>
+</section>
+
+<!-- =================== SERVICES =================== -->
+<section class="vue" id="v-services">
+  <div class="wrap">
+    <div class="entete-vue"><div class="sur-titre">Catalogue</div><h1 style="margin-top:8px">Que veux-tu construire ?</h1><p>Prix fixes pour les installations, devis gratuit sous 24 h pour les projets sur mesure.</p></div>
+    <div class="puces" id="filtresServices"></div>
+    <div class="services" id="listeServices"></div>
+  </div>
+</section>
+
+<!-- =================== COMMANDES =================== -->
+<section class="vue" id="v-commandes">
+  <div class="wrap">
+    <div id="commandesListe">
+      <div class="entete-vue"><div class="sur-titre">Espace client</div><h1 style="margin-top:8px">Mes commandes</h1><p>Chaque commande a son bordereau, son suivi et sa discussion privée.</p></div>
+      <div id="listeCommandes" class="bordereaux"></div>
+    </div>
+    <div id="commandeDetail" class="hide"></div>
+  </div>
+</section>
+
+<!-- =================== ADMIN =================== -->
+<section class="vue" id="v-admin">
+  <div class="wrap">
+    <div id="adminListe">
+      <div class="entete-vue"><div class="sur-titre">Administration</div><h1 style="margin-top:8px">Toutes les commandes</h1><p>Envoie les devis, fais avancer les étapes, livre et réponds aux clients.</p></div>
+      <div class="puces" id="filtresAdmin"></div>
+      <div id="listeAdmin" class="bordereaux" style="margin-top:8px"></div>
+    </div>
+    <div id="adminDetail" class="hide"></div>
+  </div>
+</section>
+
+<!-- =================== OUTILS =================== -->
+<section class="vue" id="v-outils">
+  <div class="wrap">
+    <div class="entete-vue"><div class="sur-titre">Outils gratuits</div><h1 style="margin-top:8px">Email jetable et numéros africains</h1><p>Protège ta vraie adresse et ton vrai numéro pour recevoir tes codes de confirmation.</p></div>
+    <div class="onglets" role="tablist"><button class="on" data-outil="mail">Email temporaire</button><button data-outil="sms">Numéros SMS</button></div>
+
+    <div id="o-mail">
+      <div class="carte" style="padding:22px;display:grid;gap:14px">
+        <div class="adresse" id="adresse">…</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+          <button class="btn btn-plein" id="mCopier"><svg class="i"><use href="#i-copie"/></svg>Copier</button>
+          <button class="btn btn-contour" id="mNouvelle"><svg class="i"><use href="#i-recharge"/></svg>Nouvelle adresse</button>
+          <button class="btn btn-contour" id="mPerso">Personnaliser <span class="vip-tag" style="font-size:9.5px">VIP</span></button>
+        </div>
+        <div class="compte-a-rebours">Expire dans <b id="mExpire">--:--</b>, puis tout est effacé</div>
+      </div>
+      <div class="carte" style="margin-top:12px;overflow:hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px"><b>Boîte de réception <span class="muet petit" id="mNb"></span></b><span class="direct">En direct</span></div>
+        <div id="mListe"></div>
+      </div>
+    </div>
+
+    <div id="o-sms" class="hide">
+      <div id="smsListeVue">
+        <div class="puces" id="pays"></div>
+        <div class="numeros" id="numeros"></div>
+        <div class="carte" style="padding:20px;margin-top:14px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between">
+          <div style="max-width:560px"><b>Un numéro rien qu'à toi ?</b><p class="second petit">Les numéros publics sont visibles par tous. Avec un pack VIP, tu loues un numéro privé pendant 20 minutes.</p></div>
+          <button class="btn btn-laiton" id="btnLouer">Louer un numéro privé</button>
+        </div>
+      </div>
+      <div id="smsDetailVue" class="hide">
+        <button class="retour" id="smsRetour"><svg class="i"><use href="#i-retour"/></svg>Tous les numéros</button>
+        <div class="carte" style="overflow:hidden">
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 18px">
+            <div style="display:flex;gap:12px;align-items:center"><span class="drapeau" id="sdDrapeau"></span><div><div class="mono" style="font-size:18px" id="sdNum"></div><div class="muet petit" id="sdInfo"></div></div></div>
+            <button class="btn btn-plein btn-petit" id="sdCopier"><svg class="i"><use href="#i-copie"/></svg>Copier</button>
+          </div>
+          <div id="sdListe"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pub" data-pub="outils">Espace publicitaire</div>
+
+    <section class="section" id="packs-vip">
+      <div class="section-t"><div><div class="sur-titre">Packs VIP</div><h2 style="margin-top:8px">Plus de temps, plus de numéros, zéro pub</h2></div></div>
+      <div class="packs" id="packs"></div>
+    </section>
+  </div>
+</section>
+</main>
+
+<footer class="pied"><div class="wrap"><div>© <span id="annee"></span> AfricansBiz · Cotonou, Bénin</div><div>contact@africansbiz.com · <a href="#accueil" id="lienCgu">Conditions d'utilisation</a></div></div></footer>
+
+<nav class="nav-bas" aria-label="Navigation">
+  <a href="#accueil" data-nav="accueil"><span class="ind"><svg class="i"><use href="#i-accueil"/></svg></span>Accueil</a>
+  <a href="#services" data-nav="services"><span class="ind"><svg class="i"><use href="#i-grille"/></svg></span>Services</a>
+  <a href="#commandes" data-nav="commandes"><span class="ind"><svg class="i"><use href="#i-bordereau"/></svg></span>Commandes<span class="pastille hide" id="pastilleBas"></span></a>
+  <a href="#outils" data-nav="outils"><span class="ind"><svg class="i"><use href="#i-outils"/></svg></span>Outils</a>
+</nav>
+
+<!-- Feuille générique -->
+<div class="voile" id="voile"><div class="feuille" role="dialog" aria-modal="true"><div class="poignee"></div><div id="feuille"></div></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+<script>
+/* =========================================================
+   CONFIGURATION — laisse SUPABASE_URL vide pour le mode démo
+   ========================================================= */
+const CONFIG = {
+  SUPABASE_URL: "",          // ex : https://abcd1234.supabase.co
+  SUPABASE_ANON_KEY: "",     // clé anon / publishable
+  MAIL_DOMAINS: ["africansbiz.com"]
+};
+const DEMO = !CONFIG.SUPABASE_URL;
+
+/* ---------- utilitaires ---------- */
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ic = (n, cls="i") => `<svg class="${cls}"><use href="#i-${n}"/></svg>`;
+const store = { get(k){ try{ return JSON.parse(localStorage.getItem("ab_"+k)); }catch{ return null; } }, set(k,v){ try{ localStorage.setItem("ab_"+k, JSON.stringify(v)); }catch{} }, del(k){ try{ localStorage.removeItem("ab_"+k); }catch{} } };
+const F = n => n == null ? "—" : Number(n).toLocaleString("fr-FR").replace(/ /g," ") + " F";
+let toastT; function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("on"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("on"),2600); }
+async function copier(t, m="Copié"){ try{ await navigator.clipboard.writeText(t); toast(m); }catch{ toast("Sélectionne le texte pour le copier"); } }
+function ago(ts){ const s=Math.max(0,(Date.now()-new Date(ts))/1000|0); if(s<60) return "à l'instant"; if(s<3600) return "il y a "+(s/60|0)+" min"; if(s<86400) return "il y a "+(s/3600|0)+" h"; return new Date(ts).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}); }
+const heure = ts => new Date(ts).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+
+/* ---------- feuilles ---------- */
+function ouvrirFeuille(html){ $("#feuille").innerHTML = html; $("#voile").classList.add("on"); setTimeout(()=>$("#feuille").querySelector("input,textarea")?.focus(), 250); }
+function fermerFeuille(){ $("#voile").classList.remove("on"); arretPaiement(); }
+$("#voile").addEventListener("click", e => { if(e.target.id==="voile" || e.target.closest("[data-fermer]")) fermerFeuille(); });
+document.addEventListener("keydown", e => { if(e.key==="Escape") fermerFeuille(); });
+const enteteFeuille = (titre, sous="") => `<div class="feuille-h"><div><h3>${titre}</h3>${sous?`<div class="muet petit" style="margin-top:4px">${sous}</div>`:""}</div><button class="icone-btn" data-fermer aria-label="Fermer">${ic("fermer")}</button></div>`;
+
+/* ---------- thème ---------- */
+function appliquerTheme(t){ document.documentElement.dataset.theme=t; $("#btnTheme").innerHTML = ic(t==="dark"?"soleil":"lune"); document.querySelector('meta[name=theme-color]').content = t==="dark"?"#0E1124":"#23306E"; globe?.theme(); }
+let globe = null;
+appliquerTheme(store.get("theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+$("#btnTheme").onclick = () => { const t = document.documentElement.dataset.theme==="dark"?"light":"dark"; store.set("theme",t); appliquerTheme(t); };
+
+/* =========================================================
+   CATALOGUE DES SERVICES (le vrai catalogue vient de la base ;
+   celui-ci sert au mode démo et de secours)
+   ========================================================= */
+const FAMILLES = [
+  {id:"creer", nom:"Créer", ic:"code", txt:"Sites web, boutiques en ligne, applications Android et robots qui travaillent pour toi."},
+  {id:"automatiser", nom:"Automatiser", ic:"video", txt:"Chaînes de production vidéo, publications automatiques, workflows et collecte de données."},
+  {id:"gerer", nom:"Gérer", ic:"bouclier", txt:"Hébergement, maintenance et applications de gestion pour ton entreprise."},
+  {id:"installer", nom:"Installer", ic:"terminal", txt:"Claude Code, Antigravity CLI et assistants IA directement sur ton téléphone Android."},
+  {id:"rediger", nom:"Rédiger", ic:"plume", txt:"Dossiers de projet, candidatures et plateformes pour écoles."}
+];
+const Q = (k,label,ph="",type="text") => ({k,label,ph,type});
+const SERVICES_DEMO = [
+  {id:"site-vitrine", fam:"creer", nom:"Site web vitrine", court:"Un site rapide et beau pour présenter ton activité, avec formulaire de contact et WhatsApp.", prix:50000, type:"devis", delai:"7 à 10 jours", q:[Q("activite","Nom de ton activité","Ex : Boutique Awa Couture"),Q("pages","Pages souhaitées","Accueil, services, contact…")]},
+  {id:"boutique", fam:"creer", nom:"Boutique en ligne", court:"Vends en ligne avec paiement Mobile Money intégré et gestion des commandes.", prix:150000, type:"devis", delai:"2 à 3 semaines", q:[Q("produits","Nombre de produits environ","Ex : 40"),Q("activite","Nom de ta boutique")]},
+  {id:"app-android", fam:"creer", nom:"Application Android", court:"Une vraie application pour tes clients ou ton équipe, publiée en APK ou sur le Play Store.", prix:150000, type:"devis", delai:"3 à 6 semaines", q:[Q("fonctions","Fonctions principales","Connexion, catalogue, notifications…"),Q("public","Pour qui ?","Clients, employés…")]},
+  {id:"robot-whatsapp", fam:"creer", nom:"Robot WhatsApp", court:"Il répond à tes clients, prend les commandes et envoie des rapports, 24 h/24.", prix:40000, type:"devis", delai:"5 à 10 jours", q:[Q("taches","Que doit faire le robot ?","Répondre aux prix, prendre les commandes…"),Q("numero","Numéro WhatsApp dédié ?","Oui / non")]},
+  {id:"robot-telegram", fam:"creer", nom:"Robot Telegram", court:"Un robot avec menus à boutons, commandes réservées à l'admin et alertes en temps réel.", prix:25000, type:"devis", delai:"3 à 7 jours", q:[Q("taches","Que doit faire le robot ?")]},
+  {id:"chaine-video", fam:"automatiser", nom:"Chaîne de production vidéo", court:"Tes vidéos créées et publiées automatiquement chaque jour sur TikTok et YouTube.", prix:75000, type:"devis", delai:"1 à 2 semaines", q:[Q("theme","Thème des vidéos","Contes, histoire, produits…"),Q("rythme","Combien par jour ?","Ex : 2")]},
+  {id:"automatisation", fam:"automatiser", nom:"Automatisation Make", court:"Connecte tes outils entre eux : formulaires, Google Sheets, WhatsApp, emails…", prix:30000, type:"devis", delai:"3 à 7 jours", q:[Q("outils","Outils à connecter")]},
+  {id:"collecte", fam:"automatiser", nom:"Collecte de données et tableau de bord", court:"Récupère automatiquement tes données et suis-les sur un tableau de bord clair.", prix:50000, type:"devis", delai:"1 à 2 semaines", q:[Q("source","D'où viennent les données ?")]},
+  {id:"hebergement", fam:"gerer", nom:"Mise en ligne et hébergement", court:"Nom de domaine, serveur, base de données Supabase : on met ton projet en ligne.", prix:20000, type:"devis", delai:"1 à 3 jours", q:[Q("projet","Quel projet mettre en ligne ?")]},
+  {id:"maintenance", fam:"gerer", nom:"Gestion et maintenance mensuelle", court:"Mises à jour, sauvegardes, corrections et petites évolutions de ton site ou de ton app.", prix:15000, type:"fixe", unite:"/ mois", delai:"Démarre sous 48 h", q:[Q("lien","Lien du site ou nom de l'app")]},
+  {id:"app-gestion", fam:"gerer", nom:"Application de gestion d'entreprise", court:"Stock, maintenance, équipes, rapports automatiques sur WhatsApp : tout dans une app.", prix:200000, type:"devis", delai:"4 à 8 semaines", q:[Q("domaine","Ton secteur","Atelier, commerce, école…")]},
+  {id:"claude-code", fam:"installer", nom:"Claude Code sur Android", court:"Installation guidée à distance dans Termux, prête à coder depuis ton téléphone. Abonnement Claude à ta charge.", prix:5000, type:"fixe", delai:"Le jour même", q:[Q("telephone","Modèle de téléphone et version d'Android","Ex : Redmi Note 13, Android 14")]},
+  {id:"antigravity", fam:"installer", nom:"Antigravity CLI sur Android", court:"Installation de l'agent Google Antigravity (agy) dans Termux, avec ton compte Google.", prix:5000, type:"fixe", delai:"Le jour même", q:[Q("telephone","Modèle de téléphone et version d'Android")]},
+  {id:"assistant-ia", fam:"installer", nom:"Assistant IA connecté", court:"Ton assistant IA sur téléphone, relié à Telegram et à tes outils pour travailler à ta place.", prix:15000, type:"fixe", delai:"1 à 2 jours", q:[Q("usage","Ce que l'assistant doit faire")]},
+  {id:"acces-vps", fam:"installer", nom:"Ton serveur depuis ton téléphone", court:"Accès SSH sécurisé à ton serveur ou VPS depuis Termux, avec raccourcis prêts.", prix:10000, type:"fixe", delai:"Le jour même", q:[Q("serveur","Type de serveur","Windows VPS, Linux…")]},
+  {id:"dossier-projet", fam:"rediger", nom:"Dossier de projet ou candidature", court:"Un dossier clair et convaincant pour un concours, un appel à projets ou un financement.", prix:20000, type:"devis", delai:"3 à 7 jours", q:[Q("concours","Concours ou organisme visé"),Q("date","Date limite","jj/mm/aaaa")]},
+  {id:"plateforme-ecole", fam:"rediger", nom:"Plateforme pour école ou étudiants", court:"Banque d'épreuves, cours, challenges et portfolios pour ton établissement.", prix:150000, type:"devis", delai:"3 à 6 semaines", q:[Q("ecole","Établissement")]}
+];
+
+const ETAPES = ["Commande","Devis","Paiement","Réalisation","Validation","Livrée"];
+const STATUTS = {devis:"Devis en préparation", a_payer:"À payer", payee:"Payée, démarrage", en_cours:"En réalisation", validation:"À valider", livree:"Livrée", annulee:"Annulée"};
+const RANG = {devis:1, a_payer:2, payee:3, en_cours:3, validation:4, livree:6, annulee:0};
+
+/* =========================================================
+   SESSION ET API
+   ========================================================= */
+let session = store.get("session");     // {access_token, refresh_token, expires_at, email}
+let moi = {plan:"free", credits:0, role:"client", email:null};
+
+async function jeton(){
+  if(!session) return null;
+  if(!DEMO && session.refresh_token && session.expires_at && Date.now()/1000 > session.expires_at - 60){
+    try{
+      const r = await fetch(CONFIG.SUPABASE_URL+"/auth/v1/token?grant_type=refresh_token",{method:"POST",headers:{"content-type":"application/json",apikey:CONFIG.SUPABASE_ANON_KEY},body:JSON.stringify({refresh_token:session.refresh_token})});
+      const j = await r.json(); if(!r.ok) throw 0;
+      session = {...session, access_token:j.access_token, refresh_token:j.refresh_token, expires_at:j.expires_at}; store.set("session", session);
+    }catch{ session=null; store.del("session"); }
+  }
+  return session?.access_token || null;
+}
+
+const reel = {
+  async call(path, opts={}){
+    const t = await jeton();
+    const r = await fetch(CONFIG.SUPABASE_URL+"/functions/v1/api"+path, {...opts, headers:{"content-type":"application/json", apikey:CONFIG.SUPABASE_ANON_KEY, authorization:"Bearer "+(t||CONFIG.SUPABASE_ANON_KEY)}});
+    const j = await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error || "Erreur "+r.status);
+    return j;
+  },
+  post(p,b){ return this.call(p,{method:"POST",body:JSON.stringify(b||{})}); },
+  async envoyerCode(email){ const r = await fetch(CONFIG.SUPABASE_URL+"/auth/v1/otp",{method:"POST",headers:{"content-type":"application/json",apikey:CONFIG.SUPABASE_ANON_KEY},body:JSON.stringify({email,create_user:true})}); if(!r.ok) throw new Error("Envoi du code impossible"); },
+  async verifierCode(email, token){
+    const r = await fetch(CONFIG.SUPABASE_URL+"/auth/v1/verify",{method:"POST",headers:{"content-type":"application/json",apikey:CONFIG.SUPABASE_ANON_KEY},body:JSON.stringify({type:"email",email,token})});
+    const j = await r.json(); if(!r.ok) throw new Error("Code incorrect ou expiré");
+    return {access_token:j.access_token, refresh_token:j.refresh_token, expires_at:j.expires_at, email};
+  },
+  me(){ return this.call("/me"); },
+  services(){ return this.call("/services"); },
+  creerCommande(b){ return this.post("/orders", b); },
+  commandes(tout){ return this.call("/orders"+(tout?"?all=1":"")); },
+  commande(id){ return this.call("/orders/"+id); },
+  messages(id, apres){ return this.call(`/orders/${id}/messages`+(apres?"?after="+encodeURIComponent(apres):"")); },
+  envoyer(id, body){ return this.post(`/orders/${id}/messages`, {body}); },
+  validerLivraison(id){ return this.post(`/orders/${id}/accept`); },
+  devis(id, amount, note){ return this.post(`/orders/${id}/quote`, {amount, note}); },
+  statut(id, status, note){ return this.post(`/orders/${id}/status`, {status, note}); },
+  livrer(id, label, url){ return this.post(`/orders/${id}/deliver`, {label, url}); },
+  reseaux(){ return this.call("/pay/networks"); },
+  payerCommande(id, b){ return this.post(`/orders/${id}/pay`, b); },
+  payerPack(b){ return this.post("/pay/init", b); },
+  statutPaiement(id){ return this.call("/pay/status?id="+encodeURIComponent(id)); },
+  otpPaiement(id, otp){ return this.post("/pay/otp", {payment_id:id, otp}); },
+  creerBoite(name, domain){ return this.post("/mailbox", {name, domain}); },
+  mails(b){ return this.call(`/mailbox/messages?address=${encodeURIComponent(b.address)}&token=${encodeURIComponent(b.token)}`); },
+  numeros(){ return this.call("/numbers"); },
+  sms(id){ return this.call(`/numbers/${id}/sms`); },
+  louer(country){ return this.post("/rent", {country}); }
+};
+
+/* ---------- simulation (mode démo) ---------- */
+const demo = (() => {
+  const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a, chiffres=n=>Array.from({length:n},()=>rnd(0,9)).join("");
+  const h = m => new Date(Date.now()-m*60000).toISOString();
+  let seq = 41, paiement = null;
+  const ref = () => "AB-2611-"+String(++seq).padStart(4,"0");
+  const svc = id => SERVICES_DEMO.find(s=>s.id===id);
+  const cmd = (service_id, status, montant, brief, minutes, events, msgs, client="awa.sossou@gmail.com") => ({
+    id:"c"+service_id, ref:ref(), service_id, service_name:svc(service_id).nom, status, amount:montant, brief, answers:{}, client_email:client,
+    created_at:h(minutes), updated_at:h(Math.max(1,minutes/6|0)), events:events.map(([k,l,d,m])=>({kind:k,label:l,detail:d||"",created_at:h(m)})),
+    messages:msgs.map(([s,b,m])=>({id:"m"+Math.random(), sender:s, body:b, created_at:h(m)})), unread: msgs.filter(x=>x[0]==="admin").length?1:0
+  });
+  let commandes = [
+    cmd("robot-whatsapp","en_cours",60000,"Je veux un robot WhatsApp pour ma boutique de tissus : il donne les prix, prend les commandes et m'envoie un résumé chaque soir.",4320,
+      [["status","Commande reçue","",4320],["status","Devis envoyé : 60 000 F","Robot + tableau des commandes + rapport du soir",4000],["status","Paiement confirmé","MTN MoMo",3900],["status","Réalisation démarrée","",3800],["note","Menu des prix terminé","Le robot répond déjà aux 3 catégories de tissus.",300]],
+      [["client","Bonjour, est-ce que le robot pourra envoyer des photos des tissus ?",3700],["admin","Bonjour Awa ! Oui, il enverra la photo avec le prix. Envoie-moi tes photos ici quand tu peux.",3690],["client","D'accord, je les prépare ce soir 👍",3600],["admin","Le menu des prix est prêt. Je te montre une vidéo demain matin.",300]]),
+    cmd("site-vitrine","a_payer",85000,"Site pour mon salon de coiffure à Cotonou, avec prise de rendez-vous.",1500,
+      [["status","Commande reçue","",1500],["status","Devis envoyé : 85 000 F","5 pages + prise de rendez-vous WhatsApp + nom de domaine 1 an",120]],
+      [["admin","Voici le devis : 85 000 F, livraison en 10 jours. Le domaine .com est inclus la première année.",120]]),
+    cmd("claude-code","livree",5000,"Installer Claude Code sur mon Redmi.",20000,
+      [["status","Commande reçue","",20000],["status","Paiement confirmé","Moov Money",19990],["status","Réalisation démarrée","",19900],["delivery","Guide d'utilisation","https://africansbiz.com/guides/claude-code",19500],["status","Livraison validée par le client","",19400]],
+      [["admin","C'est installé ! Tape claude dans Termux pour démarrer.",19500],["client","Merci, ça marche parfaitement.",19400]])
+  ];
+  commandes[2].unread = 0;
+  const autres = [cmd("chaine-video","devis",null,"Chaîne de contes africains animés, 2 vidéos par jour.",90,[["status","Commande reçue","",90]],[["client","Je voudrais des voix en fon si possible.",80]],"kossi.dev@gmail.com")];
+  autres[0].id="c-autre";
+  const tout = () => [...commandes, ...autres];
+  const trouve = id => tout().find(c=>c.id===id);
+  const reponses = ["Bien reçu, je regarde ça tout de suite.","Merci ! Je te fais un retour dans la journée.","Parfait, c'est noté dans ta commande.","Bonne question : oui, c'est prévu dans le devis."];
+
+  // ---- outils
+  const PAYS = {BJ:"229",TG:"228",CI:"225",SN:"221",NG:"234",GH:"233",CM:"237",BF:"226",KE:"254"};
+  const motifs = {BJ:()=>"01"+rnd(4,9)+chiffres(7),TG:()=>"9"+chiffres(7),CI:()=>"07"+chiffres(8),SN:()=>"77"+chiffres(7),NG:()=>"80"+rnd(3,9)+chiffres(7),GH:()=>"24"+chiffres(7),CM:()=>"6"+rnd(5,9)+chiffres(7),BF:()=>"7"+chiffres(7),KE:()=>"7"+chiffres(8)};
+  const exp = [["WhatsApp",c=>`Ton code WhatsApp : ${c.slice(0,3)}-${c.slice(3)}. Ne le partage avec personne.`],["Telegram",c=>`Code de connexion Telegram : ${c.slice(0,5)}.`],["Google",c=>`G-${c} est votre code de validation Google.`],["TikTok",c=>`[TikTok] ${c} est ton code de vérification.`],["Gozem",c=>`Gozem : votre code est ${c.slice(0,4)}.`]];
+  const unSms = m => { const [s,f]=exp[rnd(0,exp.length-1)]; return {sender:s, body:f(chiffres(6)), received_at:h(m)}; };
+  const nums = []; Object.keys(PAYS).forEach(p=>{ for(let i=0;i<(p==="BJ"?4:2);i++){ const n={id:p+i,e164:"+"+PAYS[p]+motifs[p](),country:p,sms:[]}; for(let k=0;k<rnd(3,8);k++) n.sms.push(unSms(rnd(1,600))); n.sms.sort((a,b)=>new Date(b.received_at)-new Date(a.received_at)); nums.push(n);} });
+  setInterval(()=>nums[rnd(0,nums.length-1)].sms.unshift(unSms(0)), 8000);
+  let boites = {}, location = null;
+
+  return {
+    async envoyerCode(){ await wait(500); },
+    async verifierCode(email){ await wait(400); return {access_token:"demo", email}; },
+    async me(){ const m = store.get("demo_moi") || {}; return {email:session?.email, plan:m.plan||"free", credits:m.credits||0, plan_until:m.plan_until, role:m.role||"admin"}; },
+    async services(){ return {services:SERVICES_DEMO}; },
+    async creerCommande(b){
+      await wait(500); const s = svc(b.service_id);
+      const c = cmd(b.service_id, s.type==="fixe"?"a_payer":"devis", s.type==="fixe"?s.prix:null, b.brief, 0, [["status","Commande reçue","",0]], [], session.email);
+      c.id = "c"+Date.now(); c.answers = b.answers||{}; commandes.unshift(c);
+      if(s.type==="devis") setTimeout(()=>{ c.messages.push({id:"m"+Date.now(),sender:"admin",body:"Merci pour ta commande ! J'étudie ton besoin et je t'envoie le devis très vite.",created_at:new Date().toISOString()}); c.unread++; badge(); }, 4000);
+      return {order:c};
+    },
+    async commandes(t){ return {orders:(t?tout():commandes).map(c=>({...c, messages:undefined}))}; },
+    async commande(id){ const c=trouve(id); if(!c) throw new Error("Commande introuvable"); return {order:{...c, messages:undefined}}; },
+    async messages(id){ const c=trouve(id); c.unread=0; return {messages:c.messages}; },
+    async envoyer(id, body){
+      const c=trouve(id), qui = vueCourante==="admin" ? "admin" : "client";
+      const m={id:"m"+Date.now(),sender:qui,body,created_at:new Date().toISOString()}; c.messages.push(m);
+      if(qui==="client") setTimeout(()=>{ c.messages.push({id:"m"+Date.now(),sender:"admin",body:reponses[rnd(0,reponses.length-1)],created_at:new Date().toISOString()}); }, 3000);
+      return {message:m};
+    },
+    async validerLivraison(id){ const c=trouve(id); c.status="livree"; c.events.push({kind:"status",label:"Livraison validée par le client",detail:"",created_at:new Date().toISOString()}); return {ok:true}; },
+    async devis(id, amount, note){ const c=trouve(id); c.amount=amount; c.status="a_payer"; c.events.push({kind:"status",label:"Devis envoyé : "+F(amount),detail:note||"",created_at:new Date().toISOString()}); return {ok:true}; },
+    async statut(id, status, note){ const c=trouve(id); c.status=status; c.events.push({kind:"status",label:STATUTS[status],detail:note||"",created_at:new Date().toISOString()}); return {ok:true}; },
+    async livrer(id, label, url){ const c=trouve(id); c.status="validation"; c.events.push({kind:"delivery",label,detail:url,created_at:new Date().toISOString()}); return {ok:true}; },
+    async reseaux(){ return {networks:[{code:"mtn_bj",name:"MTN MoMo"},{code:"moov_bj",name:"Moov Money"},{code:"celtiis_bj",name:"Celtiis Cash"}]}; },
+    async payerCommande(id){ await wait(700); paiement={id:"P"+Date.now(), quoi:"cmd", cible:id, at:Date.now()}; return {payment_id:paiement.id, status:"PENDING", instructions:"Démo : le paiement sera confirmé dans 5 secondes."}; },
+    async payerPack(b){ await wait(700); paiement={id:"P"+Date.now(), quoi:"pack", cible:b.pack, at:Date.now()}; return {payment_id:paiement.id, status:"PENDING", instructions:"Démo : le paiement sera confirmé dans 5 secondes."}; },
+    async statutPaiement(id){
+      if(!paiement || paiement.id!==id) return {status:"FAILED"};
+      if(Date.now()-paiement.at<5000) return {status:"PENDING"};
+      if(!paiement.fait){ paiement.fait=true;
+        if(paiement.quoi==="cmd"){ const c=trouve(paiement.cible); c.status="payee"; c.events.push({kind:"status",label:"Paiement confirmé",detail:"Mobile Money",created_at:new Date().toISOString()}); }
+        else { const m = store.get("demo_moi")||{}; Object.assign(m,{plan:paiement.cible, credits:{bronze:3,argent:15,or:50}[paiement.cible], plan_until:new Date(Date.now()+30*864e5).toISOString()}); store.set("demo_moi",m); }
+      }
+      return {status:"SUCCESS"};
+    },
+    async otpPaiement(){ return {status:"SUCCESS"}; },
+    async creerBoite(name, dom){
+      await wait(200); if(name && moi.plan==="free") throw new Error("Adresse personnalisée réservée aux VIP");
+      const noms=["kofi","ama","sena","yao","afi","edem","dossou","akpe"];
+      const address=(name||noms[rnd(0,7)]+"."+chiffres(4))+"@"+(dom||CONFIG.MAIL_DOMAINS[0]);
+      const b={address,token:"demo",expires_at:new Date(Date.now()+({free:1,bronze:24,argent:168,or:168}[moi.plan])*3600e3).toISOString(),cree:Date.now()};
+      boites[address]=[{d:4000,from:"AfricansBiz <bonjour@africansbiz.com>",subject:"Ta boîte temporaire est prête",html:`<div style="font-family:sans-serif;padding:20px"><h2 style="color:#23306E">Bienvenue</h2><p>Les mails envoyés à <b>${esc(address)}</b> arrivent ici automatiquement.</p></div>`},{d:14000,from:"MaBoutique (exemple) <no-reply@exemple.com>",subject:"Confirme ton adresse",html:`<div style="font-family:sans-serif;padding:20px"><p>Ton code :</p><p style="font-size:28px;letter-spacing:4px;font-weight:bold">${chiffres(6)}</p></div>`}];
+      return b;
+    },
+    async mails(b){ const l=boites[b.address]||[]; const age=Date.now()-(b.cree||0); return {messages:l.map((m,i)=>({...m,id:b.address+i})).filter(m=>m.d<=age).map(m=>({id:m.id,from_addr:m.from,subject:m.subject,body_html:m.html,received_at:new Date(b.cree+m.d).toISOString()})).reverse()}; },
+    async numeros(){ return {numbers:nums.map(n=>({id:n.id,e164:n.e164,country:n.country,last_sms_at:n.sms[0]?.received_at,sms_24h:n.sms.length}))}; },
+    async sms(id){ if(location&&location.id===id) return {private:true,rented_until:location.rented_until,sms:location.sms}; return {sms:(nums.find(n=>n.id===id)||{sms:[]}).sms}; },
+    async louer(country){ await wait(500); if(moi.plan==="free") throw new Error("Location réservée aux membres VIP"); if(moi.credits<=0) throw new Error("Plus de locations sur ton pack");
+      const m=store.get("demo_moi")||{}; m.credits=(m.credits||0)-1; store.set("demo_moi",m); moi.credits=m.credits;
+      location={id:"R"+Date.now(),e164:"+"+PAYS[country]+motifs[country](),country,rented_until:new Date(Date.now()+20*60000).toISOString(),sms:[]};
+      setTimeout(()=>location.sms.unshift(unSms(0)),9000); return {number:location}; }
+  };
+})();
+const api = DEMO ? demo : reel;
+
+/* =========================================================
+   ROUTEUR (#accueil, #services, #commandes, #outils, #admin)
+   ========================================================= */
+let vueCourante = "accueil";
+const VUES = ["accueil","services","commandes","outils","admin"];
+function route(){
+  let v = location.hash.slice(1) || "accueil";
+  if(v==="packs-vip"){ v="outils"; }
+  if(!VUES.includes(v)) v = "accueil";
+  if(v==="admin" && moi.role!=="admin") v = "commandes";
+  if(v!==vueCourante){ arretChat(); }
+  vueCourante = v;
+  $$(".vue").forEach(s=>s.classList.toggle("on", s.id==="v-"+v));
+  $$("[data-nav]").forEach(a=>a.classList.toggle("on", a.dataset.nav===v));
+  if(v==="services") rendreServices();
+  if(v==="commandes"){ fermerDetail("commandes"); rendreCommandes(); }
+  if(v==="admin"){ fermerDetail("admin"); rendreAdmin(); }
+  if(v==="outils") demarrerOutils();
+  if(location.hash==="#packs-vip") setTimeout(()=>document.getElementById("packs-vip").scrollIntoView(),50); else window.scrollTo({top:0});
+  globe?.visible(v==="accueil");
+}
+addEventListener("hashchange", route);
+
+/* =========================================================
+   COMPTE : connexion par code reçu par email
+   ========================================================= */
+function exigerConnexion(apres){ if(session) return true; ouvrirConnexion(apres); return false; }
+function ouvrirConnexion(apres){
+  ouvrirFeuille(enteteFeuille("Connexion", "Sans mot de passe : on t'envoie un code par email.") + `
+    <div id="cEtape1"><div class="champ"><label for="cEmail">Ton email</label><input class="c" id="cEmail" type="email" autocomplete="email" placeholder="toi@gmail.com"></div>
+    <button class="btn btn-plein btn-large" id="cEnvoyer">Recevoir mon code</button></div>
+    <div id="cEtape2" class="hide"><div class="champ"><label for="cCode">Code à 6 chiffres reçu par email</label><input class="c code-otp" id="cCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></div>
+    <button class="btn btn-plein btn-large" id="cValider">Me connecter</button><button class="btn btn-texte btn-large" id="cAutre" style="margin-top:6px">Changer d'email</button></div>`);
+  let email = "";
+  $("#cEnvoyer").onclick = async () => {
+    email = $("#cEmail").value.trim().toLowerCase();
+    if(!/^\S+@\S+\.\S+$/.test(email)) return toast("Email invalide");
+    const b=$("#cEnvoyer"); b.disabled=true; b.innerHTML='<span class="spin"></span>';
+    try{ await api.envoyerCode(email); $("#cEtape1").classList.add("hide"); $("#cEtape2").classList.remove("hide"); $("#cCode").focus(); toast(DEMO?"Démo : tape n'importe quel code":"Code envoyé à "+email); }
+    catch(e){ toast(e.message); } b.disabled=false; b.textContent="Recevoir mon code";
+  };
+  $("#cValider").onclick = async () => {
+    const code = $("#cCode").value.replace(/\D/g,""); if(code.length<6) return toast("Le code a 6 chiffres");
+    const b=$("#cValider"); b.disabled=true; b.innerHTML='<span class="spin"></span>';
+    try{ session = await api.verifierCode(email, code); store.set("session", session); fermerFeuille(); await rafraichirMoi(); toast("Bienvenue !"); route(); apres?.(); }
+    catch(e){ toast(e.message); } b.disabled=false; b.textContent="Me connecter";
+  };
+  $("#cAutre").onclick = () => { $("#cEtape2").classList.add("hide"); $("#cEtape1").classList.remove("hide"); };
+}
+function ouvrirCompte(){
+  if(!session) return ouvrirConnexion();
+  const p = PACKS.find(p=>p.id===moi.plan) || PACKS[0];
+  ouvrirFeuille(enteteFeuille("Mon compte", esc(moi.email||session.email||"")) + `
+    <div class="recap"><span>Pack outils</span><b>${p.nom}${moi.plan!=="free"&&moi.plan_until?` · jusqu'au ${new Date(moi.plan_until).toLocaleDateString("fr-FR")}`:""}</b></div>
+    ${moi.plan!=="free"?`<div class="recap"><span>Locations de numéros restantes</span><b class="mono">${moi.credits}</b></div>`:""}
+    ${DEMO?`<div class="recap"><span>Démo : voir comme administrateur</span><button class="btn btn-tonal btn-petit" id="basculeAdmin">${moi.role==="admin"?"Passer en client":"Passer en admin"}</button></div>`:""}
+    <a class="btn btn-contour btn-large" href="#commandes" data-fermer style="margin-bottom:8px">Mes commandes</a>
+    <button class="btn btn-texte btn-large" id="deconnexion">Se déconnecter</button>`);
+  $("#deconnexion").onclick = () => { session=null; store.del("session"); moi={plan:"free",credits:0,role:"client"}; appliquerMoi(); fermerFeuille(); toast("Déconnecté"); location.hash="accueil"; };
+  const ba = $("#basculeAdmin"); if(ba) ba.onclick = () => { const m=store.get("demo_moi")||{}; m.role = moi.role==="admin"?"client":"admin"; store.set("demo_moi",m); rafraichirMoi(); fermerFeuille(); toast(m.role==="admin"?"Mode administrateur":"Mode client"); };
+}
+$("#btnCompte").onclick = ouvrirCompte;
+async function rafraichirMoi(){
+  if(!session){ moi={plan:"free",credits:0,role:"client"}; return appliquerMoi(); }
+  try{ moi = {...moi, ...(await api.me())}; }catch(e){ if(/401|connecte/i.test(e.message)){ session=null; store.del("session"); } }
+  appliquerMoi();
+}
+function appliquerMoi(){
+  const vip = moi.plan && moi.plan!=="free";
+  document.body.classList.toggle("vip", vip);
+  $("#vipTag").classList.toggle("hide", !vip); $("#vipTag").textContent = vip ? "VIP "+(PACKS.find(p=>p.id===moi.plan)?.nom||"") : "";
+  $("#navAdmin").classList.toggle("hide", moi.role!=="admin");
+  rendrePacks(); badge();
+}
+async function badge(){
+  if(!session) return $("#pastilleBas").classList.add("hide");
+  try{ const {orders} = await api.commandes(false); const n = orders.reduce((s,c)=>s+(c.unread||0)+(c.status==="a_payer"||c.status==="validation"?1:0),0);
+    $("#pastilleBas").textContent=n; $("#pastilleBas").classList.toggle("hide", !n); }catch{}
+}
+
+/* =========================================================
+   ACCUEIL ET CATALOGUE
+   ========================================================= */
+let services = SERVICES_DEMO, filtreFam = "tout";
+function rendreFamilles(){
+  $("#familles").innerHTML = FAMILLES.map((f,i)=>`<a class="carte famille ${i===0?"grande":""}" href="#services" data-fam="${f.id}">
+    <span class="ic">${ic(f.ic)}</span><h3>${f.nom}</h3><p>${f.txt}</p>
+    <span class="liste">${services.filter(s=>s.fam===f.id).slice(0,4).map(s=>esc(s.nom)).join(" · ")}</span></a>`).join("");
+  $$("#familles [data-fam]").forEach(a=>a.addEventListener("click",()=>{ filtreFam=a.dataset.fam; }));
+}
+function prixHtml(s){ return s.type==="fixe" ? `${F(s.prix)}<small>${s.unite?"prix fixe "+s.unite:"prix fixe"}</small>` : `dès ${F(s.prix)}<small>sur devis gratuit</small>`; }
+function rendreServices(){
+  $("#filtresServices").innerHTML = [{id:"tout",nom:"Tout"},...FAMILLES].map(f=>`<button class="puce ${filtreFam===f.id?"on":""}" data-f="${f.id}">${f.nom}</button>`).join("");
+  const liste = services.filter(s=>filtreFam==="tout"||s.fam===filtreFam);
+  $("#listeServices").innerHTML = liste.map(s=>`<article class="carte service">
+    <div class="haut"><div><div class="fam">${esc(FAMILLES.find(f=>f.id===s.fam)?.nom)}</div><h3>${esc(s.nom)}</h3></div>${s.type==="fixe"?'<span class="statut s-livree" style="font-size:11px">Prix fixe</span>':""}</div>
+    <p>${esc(s.court)}</p>
+    <div class="bas"><div class="prix">${prixHtml(s)}</div><div style="text-align:right"><div class="delai">${esc(s.delai)}</div><button class="btn btn-plein btn-petit" style="margin-top:6px" data-commander="${s.id}">Commander</button></div></div>
+  </article>`).join("");
+}
+$("#filtresServices").addEventListener("click", e=>{ const b=e.target.closest("[data-f]"); if(b){ filtreFam=b.dataset.f; rendreServices(); } });
+$("#listeServices").addEventListener("click", e=>{ const b=e.target.closest("[data-commander]"); if(b) commander(b.dataset.commander); });
+
+function commander(id){
+  const s = services.find(x=>x.id===id); if(!s) return;
+  if(!exigerConnexion(()=>commander(id))) return;
+  ouvrirFeuille(enteteFeuille(esc(s.nom), s.type==="fixe" ? `Prix fixe ${F(s.prix)} ${s.unite||""} · ${esc(s.delai)}` : `Devis gratuit sous 24 h · ${esc(s.delai)}`) + `
+    <div class="champ"><label for="oBrief">Décris ton besoin</label><textarea class="c" id="oBrief" placeholder="Ce que tu veux, pour qui, tes exemples préférés…"></textarea></div>
+    ${(s.q||[]).map(q=>`<div class="champ"><label for="q_${q.k}">${esc(q.label)}</label><input class="c" id="q_${q.k}" data-q="${q.k}" placeholder="${esc(q.ph||"")}"></div>`).join("")}
+    <div class="champ"><label for="oWa">Ton numéro WhatsApp</label><input class="c" id="oWa" type="tel" inputmode="tel" placeholder="01 97 00 00 00"><span class="aide">Pour te prévenir quand ta commande avance.</span></div>
+    <button class="btn btn-plein btn-large" id="oEnvoyer">${s.type==="fixe"?"Commander et payer "+F(s.prix):"Envoyer ma demande de devis"}</button>`);
+  $("#oEnvoyer").onclick = async () => {
+    const brief = $("#oBrief").value.trim(); if(brief.length<10) return toast("Décris ton besoin en quelques mots");
+    const answers = {}; $$("#feuille [data-q]").forEach(i=>{ if(i.value.trim()) answers[i.previousElementSibling.textContent] = i.value.trim(); });
+    const b=$("#oEnvoyer"); b.disabled=true; b.innerHTML='<span class="spin"></span>';
+    try{
+      const {order} = await api.creerCommande({service_id:s.id, brief, answers, whatsapp:$("#oWa").value.trim()});
+      if(s.type==="fixe") payer({quoi:"commande", id:order.id, montant:order.amount, titre:s.nom, ensuite:()=>{ location.hash="commandes"; setTimeout(()=>ouvrirCommande(order.id,"commandes"),80); }});
+      else { fermerFeuille(); toast("Demande envoyée : devis sous 24 h"); location.hash="commandes"; setTimeout(()=>ouvrirCommande(order.id,"commandes"),80); }
+    }catch(e){ toast(e.message); b.disabled=false; b.textContent="Réessayer"; }
+  };
+}
+
+/* =========================================================
+   PAIEMENT SASPAY (push direct, sans redirection)
+   ========================================================= */
+let reseauxCache = null, minuteurPaiement = null, paiementEnCours = null;
+function arretPaiement(){ clearTimeout(minuteurPaiement); paiementEnCours = null; }
+async function payer(opt){
+  if(!exigerConnexion(()=>payer(opt))) return;
+  ouvrirFeuille(enteteFeuille("Paiement Mobile Money", esc(opt.titre)) + `
+    <div id="pForm">
+      <div class="recap"><span>Montant</span><b class="mono" style="font-size:18px">${F(opt.montant)}</b></div>
+      <div class="champ"><label>Ton réseau</label></div><div class="reseaux" id="pReseaux"><span class="muet petit">Chargement…</span></div>
+      <div class="champ"><label for="pNom">Nom complet</label><input class="c" id="pNom" autocomplete="name" placeholder="Awa Sossou"></div>
+      <div class="champ"><label for="pTel">Numéro Mobile Money</label><input class="c" id="pTel" type="tel" inputmode="tel" placeholder="01 97 00 00 00"></div>
+      <button class="btn btn-plein btn-large" id="pPayer">Payer ${F(opt.montant)}</button>
+      <p class="muet petit" style="text-align:center;margin-top:10px">${ic("cadenas","i")} La demande arrive sur ton téléphone. Tu restes sur AfricansBiz.</p>
+    </div>
+    <div id="pAttente" class="attente hide">
+      <div class="anneau-attente"></div>
+      <h3 style="font-size:20px;margin-bottom:6px">Valide sur ton téléphone</h3>
+      <p class="second petit" id="pInstr" style="margin-bottom:16px"></p>
+      <div id="pOtp" class="hide" style="text-align:left"><div class="champ"><label for="pOtpVal">Code reçu par SMS</label><input class="c code-otp" id="pOtpVal" inputmode="numeric" maxlength="8"></div><button class="btn btn-plein btn-large" id="pOtpOk" style="margin-bottom:8px">Confirmer le code</button></div>
+      <button class="btn btn-contour btn-large" data-fermer>Fermer</button>
+      <p class="muet petit" style="margin-top:10px">Tu peux fermer : tout s'activera dès la confirmation.</p>
+    </div>`);
+  if(!reseauxCache){ try{ reseauxCache=(await api.reseaux()).networks||[]; }catch{ reseauxCache=[]; } }
+  let reseau = reseauxCache[0]?.code;
+  $("#pReseaux").innerHTML = reseauxCache.length ? reseauxCache.map(n=>`<button class="reseau ${n.code===reseau?"on":""}" data-r="${esc(n.code)}">${esc(n.name)}</button>`).join("") : '<span class="muet petit">Paiement indisponible pour le moment.</span>';
+  $("#pReseaux").onclick = e => { const b=e.target.closest("[data-r]"); if(!b) return; reseau=b.dataset.r; $$("#pReseaux .reseau").forEach(x=>x.classList.toggle("on",x===b)); };
+  $("#pPayer").onclick = async () => {
+    const nom=$("#pNom").value.trim(), tel=$("#pTel").value.replace(/\D/g,"");
+    if(nom.length<3) return toast("Entre ton nom complet"); if(tel.length<8) return toast("Numéro invalide"); if(!reseau) return toast("Choisis ton réseau");
+    const b=$("#pPayer"); b.disabled=true; b.innerHTML='<span class="spin"></span> Envoi de la demande…';
+    try{
+      const corps = {network:reseau, phone:tel, full_name:nom, country:"BJ"};
+      const r = opt.quoi==="pack" ? await api.payerPack({...corps, pack:opt.pack}) : await api.payerCommande(opt.id, corps);
+      if(r.checkout_url){ toast("Ce réseau n'accepte pas le paiement direct : choisis-en un autre"); b.disabled=false; b.textContent="Payer "+F(opt.montant); return; }
+      paiementEnCours = r.payment_id;
+      $("#pInstr").textContent = r.instructions || "Une demande de paiement est arrivée sur ton téléphone.";
+      $("#pOtp").classList.toggle("hide", !r.otp_after_push);
+      $("#pForm").classList.add("hide"); $("#pAttente").classList.remove("hide");
+      suivrePaiement(0, opt);
+    }catch(e){ toast(e.message); b.disabled=false; b.textContent="Payer "+F(opt.montant); }
+  };
+  $("#feuille").addEventListener("click", async e => {
+    if(e.target.id!=="pOtpOk") return;
+    const v=$("#pOtpVal").value.trim(); if(v.length<4) return toast("Code invalide");
+    try{ await api.otpPaiement(paiementEnCours, v); toast("Code envoyé, vérification…"); }catch(err){ toast(err.message); }
+  });
+}
+async function suivrePaiement(n, opt){
+  clearTimeout(minuteurPaiement); const id = paiementEnCours; if(!id) return;
+  try{
+    const {status} = await api.statutPaiement(id);
+    if(status==="SUCCESS"){ paiementEnCours=null; $("#voile").classList.remove("on"); toast("Paiement reçu, merci !"); await rafraichirMoi(); opt.ensuite?.(); return; }
+    if(status==="FAILED"||status==="CANCELLED"){ paiementEnCours=null; $("#pAttente").classList.add("hide"); $("#pForm").classList.remove("hide"); $("#pPayer").disabled=false; $("#pPayer").textContent="Réessayer"; toast("Paiement refusé ou annulé"); return; }
+  }catch{}
+  if(n<60) minuteurPaiement = setTimeout(()=>suivrePaiement(n+1,opt), 4000);
+}
+
+/* =========================================================
+   COMMANDES : bordereaux, suivi, chat sécurisé
+   ========================================================= */
+function fil(statut, grand=false){
+  const r = RANG[statut] ?? 0; let h = `<div class="fil ${grand?"grand":""}" aria-label="Étape : ${esc(STATUTS[statut])}">`;
+  ETAPES.forEach((_,i)=>{ const etat = i<r ? "fait" : (i===r ? "ici" : ""); if(i) h += `<span class="t ${i<=r?"fait":""}"></span>`; h += `<span class="p ${statut==="livree"?"fait":etat}"></span>`; });
+  return h + "</div>";
+}
+function bordereau(c, admin=false){
+  return `<button class="carte bordereau" data-cmd="${esc(c.id)}">
+    <div><div class="ref">${esc(c.ref)} · ${ago(c.created_at)}</div><h3>${esc(c.service_name)}</h3>${admin?`<div class="muet petit">${esc(c.client_email||"")}</div>`:""}</div>
+    <div class="montant">${c.amount?F(c.amount):'<span class="muet petit">devis</span>'}</div>
+    <div class="ligne" style="margin-top:8px"><div style="flex:1;min-width:160px;max-width:260px">${fil(c.status)}</div>
+      <div style="display:flex;gap:10px;align-items:center">${c.unread?`<span class="non-lu">${ic("mail","i")}${c.unread} nouveau${c.unread>1?"x":""}</span>`:""}<span class="statut s-${c.status}">${esc(STATUTS[c.status])}</span></div></div>
+  </button>`;
+}
+async function rendreCommandes(){
+  const el = $("#listeCommandes");
+  if(!session){ el.innerHTML = `<div class="carte vide"><div class="ic">${ic("cadenas")}</div><h3>Connecte-toi pour voir tes commandes</h3><p class="petit" style="margin-bottom:16px">Ton espace est privé : commandes, suivi et discussions.</p><button class="btn btn-plein" id="vConn">Me connecter</button></div>`; $("#vConn").onclick=()=>ouvrirConnexion(rendreCommandes); return; }
+  el.innerHTML = `<div class="carte vide"><span class="spin" style="display:inline-block"></span></div>`;
+  try{
+    const {orders} = await api.commandes(false);
+    el.innerHTML = orders.length ? orders.map(c=>bordereau(c)).join("") : `<div class="carte vide"><div class="ic">${ic("bordereau")}</div><h3>Aucune commande pour l'instant</h3><p class="petit" style="margin-bottom:16px">Choisis un service : ton premier bordereau apparaîtra ici.</p><a class="btn btn-plein" href="#services">Voir les services</a></div>`;
+  }catch(e){ el.innerHTML = `<div class="carte vide">${esc(e.message)}</div>`; }
+}
+$("#listeCommandes").addEventListener("click", e=>{ const b=e.target.closest("[data-cmd]"); if(b) ouvrirCommande(b.dataset.cmd,"commandes"); });
+
+let chat = {id:null, minuteur:null, derniers:[]};
+function arretChat(){ clearTimeout(chat.minuteur); chat.id=null; }
+function fermerDetail(v){ arretChat(); const L = v==="admin"?"#adminListe":"#commandesListe", D = v==="admin"?"#adminDetail":"#commandeDetail"; $(L).classList.remove("hide"); $(D).classList.add("hide"); }
+
+async function ouvrirCommande(id, v){
+  const admin = v==="admin";
+  const L = admin?"#adminListe":"#commandesListe", D = admin?"#adminDetail":"#commandeDetail";
+  $(L).classList.add("hide"); const d=$(D); d.classList.remove("hide");
+  d.innerHTML = `<div class="carte vide" style="margin-top:24px"><span class="spin" style="display:inline-block"></span></div>`;
+  window.scrollTo({top:0});
+  let c; try{ c = (await api.commande(id)).order; }catch(e){ d.innerHTML = `<div class="carte vide" style="margin-top:24px">${esc(e.message)}</div>`; return; }
+  const r = RANG[c.status] ?? 0;
+  const livrables = (c.events||[]).filter(e=>e.kind==="delivery");
+  let action = "";
+  if(!admin && c.status==="a_payer") action = `<div class="action-requise"><div><div class="petit">Devis prêt</div><b>${F(c.amount)} à payer pour démarrer</b></div><button class="btn btn-plein" id="dPayer">Payer maintenant</button></div>`;
+  if(!admin && c.status==="validation") action = `<div class="action-requise"><div><div class="petit">Ta livraison est prête</div><b>Teste-la puis valide</b></div><button class="btn btn-plein" id="dValider">${ic("ok")}Valider la livraison</button></div>`;
+  if(!admin && c.status==="devis") action = `<div class="action-requise" style="background:var(--ivoire-moyen);color:var(--encre)"><div><div class="petit">En cours d'étude</div><b>Ton devis arrive sous 24 h</b></div></div>`;
+  const outilsAdmin = !admin ? "" : `<div class="carte bloc"><h2>Actions administrateur</h2><div class="admin-outils">
+      <div class="rangee"><input class="c" id="aMontant" inputmode="numeric" placeholder="Montant du devis (F)"><input class="c" id="aNoteDevis" placeholder="Ce qui est inclus"><button class="btn btn-plein" id="aDevis">Envoyer le devis</button></div>
+      <div class="rangee"><select class="c" id="aStatut">${Object.entries(STATUTS).map(([k,l])=>`<option value="${k}" ${k===c.status?"selected":""}>${l}</option>`).join("")}</select><input class="c" id="aNote" placeholder="Note visible par le client"><button class="btn btn-tonal" id="aMaj">Mettre à jour</button></div>
+      <div class="rangee"><input class="c" id="aLivNom" placeholder="Nom du livrable (ex : APK v1)"><input class="c" id="aLivUrl" placeholder="Lien (https://…)"><button class="btn btn-laiton" id="aLivrer">Livrer</button></div>
+    </div></div>`;
+  d.innerHTML = `
+    <button class="retour" id="dRetour">${ic("retour")}${admin?"Toutes les commandes":"Mes commandes"}</button>
+    <div class="onglets-detail"><button class="on" data-o="suivi">Suivi</button><button data-o="chat">Discussion</button></div>
+    <div class="detail" data-onglet="suivi">
+      <div class="col-suivi" style="display:grid;gap:14px">
+        <div class="carte bordereau" style="cursor:default;padding-top:22px;padding-bottom:22px">
+          <div><div class="ref">${esc(c.ref)} · ${ago(c.created_at)}</div><h3 style="font-size:22px">${esc(c.service_name)}</h3>${admin?`<div class="muet petit">${esc(c.client_email||"")}</div>`:""}</div>
+          <div class="montant" style="font-size:18px">${c.amount?F(c.amount):'<span class="muet petit">devis à venir</span>'}</div>
+          <div class="ligne" style="display:block;margin-top:14px">${fil(c.status,true)}<div class="fil-noms">${ETAPES.map((e,i)=>`<span class="${i===Math.min(r,5)?"ici":""}" data-n="Étape ${i+1}/6">${e}</span>`).join("")}</div></div>
+        </div>
+        ${action}
+        ${outilsAdmin}
+        ${livrables.length?`<div class="carte bloc"><h2>Livrables</h2>${livrables.map(l=>`<a class="livrable" href="${esc(l.detail)}" target="_blank" rel="noopener">${ic("paquet")}<span>${esc(l.label)}</span></a>`).join("")}</div>`:""}
+        <div class="carte bloc"><h2>Historique</h2><ul class="evenements">${(c.events||[]).slice().reverse().map(e=>`<li class="${e.kind==="delivery"?"livr":""}"><span class="pt">${ic(e.kind==="delivery"?"paquet":"ok")}</span><div><b style="font-weight:600">${esc(e.label)}</b>${e.detail&&e.kind!=="delivery"?`<div class="second petit">${esc(e.detail)}</div>`:""}<div class="q">${new Date(e.created_at).toLocaleString("fr-FR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}</div></div></li>`).join("")}</ul></div>
+        <div class="carte bloc"><h2>${admin?"Demande du client":"Ta demande"}</h2><p class="brief">${esc(c.brief)}</p>${Object.keys(c.answers||{}).length?`<dl class="reponses">${Object.entries(c.answers).map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>`:""}</div>
+      </div>
+      <div class="col-chat"><div class="carte chat">
+        <div class="chat-h"><span class="cadenas">${ic("cadenas")}</span><div><b>${admin?"Discussion avec le client":"Discussion avec ton développeur"}</b><span>Privée : visible seulement par vous deux</span></div></div>
+        <div class="fil-msg" id="filMsg"><div class="jour">Chargement…</div></div>
+        <form class="saisie" id="saisie"><textarea id="msgTexte" rows="1" placeholder="Écris ton message…" maxlength="4000"></textarea><button aria-label="Envoyer">${ic("envoi")}</button></form>
+      </div></div>
+    </div>`;
+  $("#dRetour").onclick = () => { fermerDetail(v); admin?rendreAdmin():rendreCommandes(); badge(); };
+  $$(".onglets-detail button").forEach(b=>b.onclick=()=>{ $$(".onglets-detail button").forEach(x=>x.classList.toggle("on",x===b)); d.querySelector(".detail").dataset.onglet=b.dataset.o; if(b.dataset.o==="chat") defilerBas(); });
+  $("#dPayer")?.addEventListener("click", ()=>payer({quoi:"commande", id:c.id, montant:c.amount, titre:c.ref+" · "+c.service_name, ensuite:()=>ouvrirCommande(c.id,v)}));
+  $("#dValider")?.addEventListener("click", async ()=>{ try{ await api.validerLivraison(c.id); toast("Merci ! Commande terminée"); ouvrirCommande(c.id,v); }catch(e){ toast(e.message); } });
+  if(admin){
+    $("#aDevis").onclick = async ()=>{ const m=parseInt($("#aMontant").value.replace(/\D/g,"")); if(!m) return toast("Montant invalide"); try{ await api.devis(c.id,m,$("#aNoteDevis").value.trim()); toast("Devis envoyé"); ouvrirCommande(c.id,v); }catch(e){ toast(e.message); } };
+    $("#aMaj").onclick = async ()=>{ try{ await api.statut(c.id,$("#aStatut").value,$("#aNote").value.trim()); toast("Étape mise à jour"); ouvrirCommande(c.id,v); }catch(e){ toast(e.message); } };
+    $("#aLivrer").onclick = async ()=>{ const n=$("#aLivNom").value.trim(), u=$("#aLivUrl").value.trim(); if(!n||!/^https?:\/\//.test(u)) return toast("Nom et lien https requis"); try{ await api.livrer(c.id,n,u); toast("Livrable envoyé au client"); ouvrirCommande(c.id,v); }catch(e){ toast(e.message); } };
+  }
+  const ta = $("#msgTexte");
+  ta.addEventListener("input", ()=>{ ta.style.height="auto"; ta.style.height=Math.min(ta.scrollHeight,120)+"px"; });
+  ta.addEventListener("keydown", e=>{ if(e.key==="Enter" && !e.shiftKey && matchMedia("(min-width:821px)").matches){ e.preventDefault(); $("#saisie").requestSubmit(); } });
+  $("#saisie").onsubmit = async e => { e.preventDefault(); const t=ta.value.trim(); if(!t) return; ta.value=""; ta.style.height="auto";
+    try{ await api.envoyer(c.id,t); chargerMessages(true); }catch(err){ toast(err.message); ta.value=t; } };
+  chat = {id:c.id, minuteur:null, derniers:[], admin};
+  chargerMessages(true);
+}
+function defilerBas(){ const f=$("#filMsg"); if(f) f.scrollTop=f.scrollHeight; }
+async function chargerMessages(forcer){
+  clearTimeout(chat.minuteur); const id = chat.id; if(!id) return;
+  try{
+    const {messages} = await api.messages(id);
+    if(id!==chat.id) return;
+    if(forcer || messages.length!==chat.derniers.length){
+      const f=$("#filMsg"); const enBas = f.scrollHeight - f.scrollTop - f.clientHeight < 80;
+      let jour = "", h = "";
+      if(!messages.length) h = `<div class="msg sys">Pose ici tes questions sur la commande. ${ic("cadenas","i")} Seuls toi et ${chat.admin?"le client":"ton développeur"} voyez ces messages.</div>`;
+      for(const m of messages){
+        const j = new Date(m.created_at).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+        if(j!==jour){ h += `<div class="jour">${j}</div>`; jour=j; }
+        const mien = chat.admin ? m.sender==="admin" : m.sender==="client";
+        h += `<div class="msg ${mien?"moi":"lui"}">${esc(m.body)}<span class="h">${heure(m.created_at)}</span></div>`;
+      }
+      f.innerHTML = h; if(enBas||forcer) defilerBas();
+      chat.derniers = messages;
+    }
+  }catch{}
+  chat.minuteur = setTimeout(()=>chargerMessages(false), 3000);
+}
+
+/* ---------- administration ---------- */
+let filtreAdmin = "actives";
+async function rendreAdmin(){
+  const F_ = [["actives","En cours"],["devis","Devis à faire"],["a_payer","À payer"],["en_cours","En réalisation"],["validation","À valider"],["livree","Livrées"],["tout","Tout"]];
+  $("#filtresAdmin").innerHTML = F_.map(([k,l])=>`<button class="puce ${filtreAdmin===k?"on":""}" data-fa="${k}">${l}</button>`).join("");
+  $("#listeAdmin").innerHTML = `<div class="carte vide"><span class="spin" style="display:inline-block"></span></div>`;
+  try{
+    const {orders} = await api.commandes(true);
+    const l = orders.filter(c=> filtreAdmin==="tout" || (filtreAdmin==="actives" ? !["livree","annulee"].includes(c.status) : filtreAdmin==="en_cours" ? ["payee","en_cours"].includes(c.status) : c.status===filtreAdmin));
+    $("#listeAdmin").innerHTML = l.length ? l.map(c=>bordereau(c,true)).join("") : `<div class="carte vide"><h3>Rien ici</h3><p class="petit">Aucune commande dans cette catégorie.</p></div>`;
+  }catch(e){ $("#listeAdmin").innerHTML = `<div class="carte vide">${esc(e.message)}</div>`; }
+}
+$("#filtresAdmin").addEventListener("click", e=>{ const b=e.target.closest("[data-fa]"); if(b){ filtreAdmin=b.dataset.fa; rendreAdmin(); } });
+$("#listeAdmin").addEventListener("click", e=>{ const b=e.target.closest("[data-cmd]"); if(b) ouvrirCommande(b.dataset.cmd,"admin"); });
+
+/* =========================================================
+   OUTILS : email temporaire et numéros SMS
+   ========================================================= */
+const PAYS = [["BJ","Bénin","🇧🇯","229"],["TG","Togo","🇹🇬","228"],["CI","Côte d'Ivoire","🇨🇮","225"],["SN","Sénégal","🇸🇳","221"],["NG","Nigeria","🇳🇬","234"],["GH","Ghana","🇬🇭","233"],["CM","Cameroun","🇨🇲","237"],["BF","Burkina Faso","🇧🇫","226"],["KE","Kenya","🇰🇪","254"]].map(([code,nom,drapeau,ind])=>({code,nom,drapeau,ind}));
+const P = Object.fromEntries(PAYS.map(p=>[p.code,p]));
+const fmtNum = e => { const p=PAYS.find(p=>e.startsWith("+"+p.ind)); return p ? "+"+p.ind+" "+e.slice(p.ind.length+1).replace(/(\d{2})(?=\d)/g,"$1 ") : e; };
+let boite = store.get("boite"), vus = new Set(store.get("vus")||[]), mails = [], mMin, mCompte, outilsDemarres = false;
+function demarrerOutils(){ if(outilsDemarres) return; outilsDemarres = true; if(!boite || new Date(boite.expires_at)<Date.now()) nouvelleBoite(); else { afficherBoite(); sonderMails(); } }
+$$("[data-outil]").forEach(b=>b.onclick=()=>{ $$("[data-outil]").forEach(x=>x.classList.toggle("on",x===b)); $("#o-mail").classList.toggle("hide",b.dataset.outil!=="mail"); $("#o-sms").classList.toggle("hide",b.dataset.outil!=="sms"); if(b.dataset.outil==="sms") chargerNumeros(); });
+async function nouvelleBoite(nom, dom){
+  $("#adresse").innerHTML='<span class="spin" style="display:inline-block"></span>';
+  try{ const b = await api.creerBoite(nom, dom); boite = {...b, cree:b.cree||Date.now()}; store.set("boite",boite); vus=new Set(); store.set("vus",[]); mails=[]; afficherBoite(); afficherMails([]); sonderMails(); return true; }
+  catch(e){ toast(e.message); afficherBoite(); return false; }
+}
+function afficherBoite(){
+  $("#adresse").textContent = boite?.address || "—"; clearInterval(mCompte);
+  const t = () => { if(!boite) return; const s=Math.round((new Date(boite.expires_at)-Date.now())/1000); if(s<=0){ clearInterval(mCompte); nouvelleBoite(); return; } const h=s/3600|0,m=(s%3600)/60|0; $("#mExpire").textContent=(h?h+" h ":"")+String(m).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); };
+  t(); mCompte=setInterval(t,1000);
+}
+function afficherMails(l){
+  mails = l; $("#mNb").textContent = l.length ? "("+l.length+")" : "";
+  $("#mListe").innerHTML = l.length ? l.map(m=>{ const n=(m.from_addr||"?").replace(/<.*>/,"").trim()||m.from_addr; return `<button class="mail ${vus.has(m.id)?"":"neuf"}" data-m="${esc(m.id)}"><span class="av">${esc(n[0]?.toUpperCase()||"?")}</span><span style="min-width:0"><div class="s">${esc(m.subject||"(sans objet)")}</div><div class="f">${esc(m.from_addr)}</div></span><span class="muet petit">${ago(m.received_at)}</span></button>`; }).join("")
+    : `<div class="vide" style="border-top:1px solid var(--trait)"><div class="ic">${ic("mail")}</div><h3>Aucun mail pour l'instant</h3><p class="petit">Ils apparaissent ici tout seuls.</p></div>`;
+}
+async function sonderMails(){
+  clearTimeout(mMin);
+  if(boite){ try{ const {messages}=await api.mails(boite); if(messages.length>mails.length && mails.length) toast("Nouveau mail reçu"); afficherMails(messages); }catch(e){ if(/expir|introuvable/i.test(e.message)) return nouvelleBoite(); } }
+  mMin = setTimeout(sonderMails, 5000);
+}
+$("#mListe").addEventListener("click", e=>{
+  const b=e.target.closest("[data-m]"); if(!b) return; const m=mails.find(x=>String(x.id)===b.dataset.m); if(!m) return;
+  vus.add(m.id); store.set("vus",[...vus]); b.classList.remove("neuf");
+  ouvrirFeuille(enteteFeuille(esc(m.subject||"(sans objet)"), esc(m.from_addr)+" · "+new Date(m.received_at).toLocaleString("fr-FR")) + `<iframe id="mCadre" sandbox="" referrerpolicy="no-referrer" title="Contenu du mail" style="width:100%;min-height:340px;border:0;border-radius:12px;background:#fff"></iframe>`);
+  $("#mCadre").srcdoc = `<!DOCTYPE html><meta charset="utf-8"><base target="_blank"><style>body{margin:0;color:#111;font-family:sans-serif;word-break:break-word}img{max-width:100%}</style>${m.body_html||`<pre style="white-space:pre-wrap;padding:16px;font-family:sans-serif">${esc(m.body_text||"")}</pre>`}`;
+});
+$("#mCopier").onclick = () => boite && copier(boite.address, "Adresse copiée");
+$("#mNouvelle").onclick = () => nouvelleBoite();
+$("#mPerso").onclick = () => {
+  if(moi.plan==="free"){ toast("Réservé aux membres VIP"); document.getElementById("packs-vip").scrollIntoView(); return; }
+  ouvrirFeuille(enteteFeuille("Adresse personnalisée") + `<div class="champ"><label for="pnNom">Ton nom d'adresse</label><input class="c mono" id="pnNom" placeholder="moncompte" maxlength="30"></div><div class="champ"><label for="pnDom">Domaine</label><select class="c" id="pnDom">${CONFIG.MAIL_DOMAINS.map(d=>`<option>${esc(d)}</option>`).join("")}</select></div><button class="btn btn-plein btn-large" id="pnOk">Créer l'adresse</button>`);
+  $("#pnOk").onclick = async () => { const n=$("#pnNom").value.trim().toLowerCase(); if(!/^[a-z0-9][a-z0-9._-]{2,29}$/.test(n)) return toast("3 à 30 caractères : lettres, chiffres, . _ -"); if(await nouvelleBoite(n,$("#pnDom").value)){ fermerFeuille(); toast("Adresse créée"); } };
+};
+
+let numeros=[], filtrePays="tout", numCourant=null, smsMin;
+async function chargerNumeros(){
+  try{ numeros = (await api.numeros()).numbers||[]; }catch(e){ $("#numeros").innerHTML=`<div class="carte vide" style="grid-column:1/-1">${esc(e.message)}</div>`; return; }
+  const nb={}; numeros.forEach(n=>nb[n.country]=(nb[n.country]||0)+1);
+  $("#pays").innerHTML = [{code:"tout",nom:"Tous",drapeau:"🌍"},...PAYS.filter(p=>nb[p.code])].map(p=>`<button class="puce ${filtrePays===p.code?"on":""}" data-p="${p.code}">${p.drapeau} ${esc(p.nom)}${p.code!=="tout"?" · "+nb[p.code]:""}</button>`).join("");
+  const l = numeros.filter(n=>filtrePays==="tout"||n.country===filtrePays);
+  $("#numeros").innerHTML = l.map(n=>{ const p=P[n.country]||{drapeau:"🏳️",nom:n.country}; return `<div class="carte numero"><div style="display:flex;gap:10px;align-items:center"><span class="drapeau">${p.drapeau}</span><div><div class="n">${esc(fmtNum(n.e164))}</div><div class="muet petit">${esc(p.nom)}</div></div></div><div style="display:flex;justify-content:space-between" class="muet petit"><span>${n.last_sms_at?"Dernier SMS "+ago(n.last_sms_at):"Aucun SMS"}</span><span class="mono">${n.sms_24h||0} SMS</span></div><div style="display:flex;gap:8px"><button class="btn btn-contour btn-petit" style="flex:1" data-cp="${esc(n.e164)}">${ic("copie")}Copier</button><button class="btn btn-plein btn-petit" style="flex:1" data-ouv="${esc(n.id)}">Voir les SMS</button></div></div>`; }).join("") || `<div class="carte vide" style="grid-column:1/-1">Aucun numéro disponible pour ce pays.</div>`;
+}
+$("#pays").addEventListener("click", e=>{ const b=e.target.closest("[data-p]"); if(b){ filtrePays=b.dataset.p; chargerNumeros(); } });
+$("#numeros").addEventListener("click", e=>{ const c=e.target.closest("[data-cp]"); if(c) return copier(c.dataset.cp,"Numéro copié"); const o=e.target.closest("[data-ouv]"); if(o) ouvrirNumero(numeros.find(n=>n.id===o.dataset.ouv)); });
+function ouvrirNumero(n, prive=false){
+  numCourant={...n,prive}; const p=P[n.country]||{drapeau:"🏳️",nom:n.country};
+  $("#sdDrapeau").textContent=p.drapeau; $("#sdNum").textContent=fmtNum(n.e164);
+  $("#sdInfo").textContent = prive ? "Numéro privé : toi seul vois ces SMS" : p.nom+" · numéro public, visible par tous";
+  $("#smsListeVue").classList.add("hide"); $("#smsDetailVue").classList.remove("hide"); sonderSms();
+}
+async function sonderSms(){
+  clearTimeout(smsMin); if(!numCourant) return;
+  try{ const r=await api.sms(numCourant.id); if(r.private){ const m=Math.round((new Date(r.rented_until)-Date.now())/60000); $("#sdInfo").textContent = m>0?`Numéro privé · encore ${m} min`:"Location terminée"; }
+    const l=r.sms||[]; $("#sdListe").innerHTML = l.length ? l.map(s=>`<div class="sms"><div class="h"><b>${esc(s.sender)}</b><span>${ago(s.received_at)}</span></div><div>${esc(s.body).replace(/\b(\d{3}[- ]?\d{3}|\d{4,8})\b/g,m=>`<span class="code" data-code="${m.replace(/\D/g,"")}">${m}</span>`)}</div></div>`).join("") : `<div class="vide" style="border-top:1px solid var(--trait)"><h3>En attente de SMS…</h3><p class="petit">Envoie ton code sur ce numéro.</p></div>`;
+  }catch(e){ $("#sdListe").innerHTML=`<div class="vide">${esc(e.message)}</div>`; }
+  smsMin=setTimeout(sonderSms, numCourant.prive?4000:8000);
+}
+$("#sdListe").addEventListener("click", e=>{ const c=e.target.closest(".code"); if(c) copier(c.dataset.code,"Code copié : "+c.dataset.code); });
+$("#smsRetour").onclick = () => { numCourant=null; clearTimeout(smsMin); $("#smsDetailVue").classList.add("hide"); $("#smsListeVue").classList.remove("hide"); chargerNumeros(); };
+$("#sdCopier").onclick = () => numCourant && copier(numCourant.e164,"Numéro copié");
+$("#btnLouer").onclick = () => {
+  if(!exigerConnexion()) return;
+  if(moi.plan==="free"){ toast("Choisis d'abord un pack VIP"); return document.getElementById("packs-vip").scrollIntoView(); }
+  ouvrirFeuille(enteteFeuille("Louer un numéro privé", `Il te reste ${moi.credits} location(s)`) + `<div class="champ"><label for="lPays">Pays</label><select class="c" id="lPays">${PAYS.map(p=>`<option value="${p.code}">${p.drapeau} ${esc(p.nom)} (+${p.ind})</option>`).join("")}</select></div><button class="btn btn-plein btn-large" id="lOk">Louer pour 20 minutes</button>`);
+  $("#lOk").onclick = async () => { try{ const {number}=await api.louer($("#lPays").value); fermerFeuille(); rafraichirMoi(); ouvrirNumero(number,true); toast("Numéro loué pour 20 min"); }catch(e){ toast(e.message); } };
+};
+
+const PACKS = [
+  {id:"free", nom:"Gratuit", prix:0, duree:"", av:["Email valable 1 heure","Numéros publics illimités","Avec publicités"]},
+  {id:"bronze", nom:"Bronze", prix:500, duree:"7 jours", av:["Sans publicité","Email valable 24 heures","Adresse personnalisée","3 numéros privés"]},
+  {id:"argent", nom:"Argent", prix:2000, duree:"30 jours", top:true, av:["Tout Bronze","Email valable 7 jours","15 numéros privés"]},
+  {id:"or", nom:"Or", prix:5000, duree:"30 jours", av:["Tout Argent","50 numéros privés","Plusieurs adresses à la fois"]}
+];
+function rendrePacks(){
+  $("#packs").innerHTML = PACKS.map(p=>`<div class="carte pack ${p.top?"mis-en-avant":""}">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="font-size:19px">${p.nom}</h3>${p.top?'<span class="vip-tag">Le plus choisi</span>':""}</div>
+    <div class="prix" style="font-size:28px">${F(p.prix)} <small style="display:inline">${p.duree?"/ "+p.duree:"pour toujours"}</small></div>
+    <ul>${p.av.map(a=>`<li>${esc(a)}</li>`).join("")}</ul>
+    ${p.prix?`<button class="btn ${p.top?"btn-plein":"btn-contour"}" data-pack="${p.id}">${moi.plan===p.id?"Renouveler":"Choisir "+p.nom}</button>`:`<button class="btn btn-contour" disabled>${moi.plan==="free"?"Pack actuel":"Inclus"}</button>`}
+  </div>`).join("");
+}
+$("#packs").addEventListener("click", e=>{ const b=e.target.closest("[data-pack]"); if(!b) return; const p=PACKS.find(x=>x.id===b.dataset.pack); payer({quoi:"pack", pack:p.id, montant:p.prix, titre:"Pack "+p.nom+" · "+p.duree, ensuite:()=>toast("Pack "+p.nom+" activé")}); });
+
+/* =========================================================
+   GLOBE 3D (Three.js) : réseau d'ateliers depuis Cotonou
+   ========================================================= */
+function creerGlobe(){
+  const hote = $("#scene"); if(!window.THREE || !hote) return null;
+  const T = window.THREE, reduit = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let renderer; try{ renderer = new T.WebGLRenderer({antialias:true, alpha:true}); }catch{ return null; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2)); hote.prepend(renderer.domElement); $("#repli").remove();
+  const scene = new T.Scene(), cam = new T.PerspectiveCamera(36,1,.1,100); cam.position.set(0,0,6.2);
+  const monde = new T.Group(); scene.add(monde); monde.rotation.x = .32;
+  const R = 1.6, N = 2600, pos = new Float32Array(N*3);
+  for(let i=0;i<N;i++){ const y=1-(i/(N-1))*2, r=Math.sqrt(1-y*y), t=Math.PI*(3-Math.sqrt(5))*i; pos.set([Math.cos(t)*r*R, y*R, Math.sin(t)*r*R], i*3); }
+  const gPts = new T.BufferGeometry(); gPts.setAttribute("position", new T.BufferAttribute(pos,3));
+  const mPts = new T.PointsMaterial({size:.022, transparent:true, opacity:.55});
+  monde.add(new T.Points(gPts, mPts));
+  const sphere = new T.Mesh(new T.SphereGeometry(R*.985,48,48), new T.MeshBasicMaterial({transparent:true, opacity:.9}));
+  monde.add(sphere);
+  const v = (lat, lon, h=R) => { const p=(90-lat)*Math.PI/180, l=(lon+180)*Math.PI/180; return new T.Vector3(-h*Math.sin(p)*Math.cos(l), h*Math.cos(p), h*Math.sin(p)*Math.sin(l)); };
+  const villes = [[6.37,2.39],[6.13,1.22],[5.36,-4.01],[14.72,-17.47],[6.52,3.38],[4.05,9.7],[12.37,-1.52],[-1.29,36.82],[5.6,-.19],[30.04,31.24],[48.86,2.35],[13.51,2.11]];
+  const mNoeud = new T.MeshBasicMaterial(), gNoeud = new T.SphereGeometry(.028,12,12);
+  villes.forEach(([a,o],i)=>{ const m=new T.Mesh(i?gNoeud:new T.SphereGeometry(.05,16,16), mNoeud); m.position.copy(v(a,o,R*1.005)); monde.add(m); });
+  const arcs = [], mArc = new T.LineBasicMaterial({transparent:true, opacity:.75}), gImp = new T.SphereGeometry(.022,10,10), mImp = new T.MeshBasicMaterial();
+  const origine = v(...villes[0]);
+  villes.slice(1).forEach(([a,o],i)=>{
+    const fin = v(a,o), mil = origine.clone().add(fin).multiplyScalar(.5), d = origine.distanceTo(fin);
+    mil.normalize().multiplyScalar(R + .25 + d*.35);
+    const courbe = new T.QuadraticBezierCurve3(origine, mil, fin);
+    monde.add(new T.Line(new T.BufferGeometry().setFromPoints(courbe.getPoints(48)), mArc));
+    const imp = new T.Mesh(gImp, mImp); monde.add(imp); arcs.push({courbe, imp, decal:i*.17});
+  });
+  // orienter le globe pour montrer l'Afrique de l'Ouest
+  monde.rotation.y = -Math.PI/2 - 2.39*Math.PI/180 + .35;
+  const couleurs = () => { const s=getComputedStyle(document.documentElement), c=k=>new T.Color(s.getPropertyValue(k).trim()); mPts.color=c("--indigo"); sphere.material.color=c("--ivoire"); mNoeud.color=c("--laiton"); mArc.color=c("--laiton"); mImp.color=c("--laiton"); };
+  couleurs();
+  const taille = () => { const w=hote.clientWidth; renderer.setSize(w,w,false); cam.aspect=1; cam.updateProjectionMatrix(); };
+  taille(); addEventListener("resize", taille);
+  let actif = true, glisse = null, vitesse = .0016;
+  hote.addEventListener("pointerdown", e=>{ glisse={x:e.clientX, r:monde.rotation.y}; });
+  addEventListener("pointermove", e=>{ if(glisse) monde.rotation.y = glisse.r + (e.clientX-glisse.x)*.006; });
+  addEventListener("pointerup", ()=>glisse=null);
+  let raf = 0;
+  const horloge = new T.Clock();
+  function boucle(){
+    raf = 0;
+    if(!actif) return;
+    const t = horloge.getElapsedTime();
+    if(!glisse && !reduit) monde.rotation.y += vitesse;
+    arcs.forEach(a=>{ const k=((t*.22 + a.decal) % 1); a.imp.position.copy(a.courbe.getPoint(k)); a.imp.visible = !reduit; });
+    renderer.render(scene, cam);
+    if(!reduit) raf = requestAnimationFrame(boucle);
+  }
+  const relancer = () => { if(!raf) raf = requestAnimationFrame(boucle); };
+  let enVue = true;
+  new IntersectionObserver(([e])=>{ enVue = e.isIntersecting; actif = enVue && vueCourante==="accueil"; if(actif) relancer(); }).observe(hote);
+  relancer();
+  return { theme(){ couleurs(); renderer.render(scene,cam); }, visible(o){ actif = o && enVue; if(actif) relancer(); } };
+}
+
+/* =========================================================
+   DÉMARRAGE
+   ========================================================= */
+$("#annee").textContent = new Date().getFullYear();
+if(DEMO){ $("#bandeauDemo").classList.remove("hide"); if(!store.get("demo_moi")) store.set("demo_moi",{role:"admin",plan:"free",credits:0}); }
+$("#lienCgu").onclick = e => { e.preventDefault(); ouvrirFeuille(enteteFeuille("Conditions d'utilisation") + `<p class="second" style="font-size:14.5px">Les outils (email temporaire, numéros) sont interdits pour la fraude, l'arnaque, l'usurpation d'identité, le spam ou toute activité illégale. Les numéros publics sont visibles par tous : ne les utilise jamais pour un compte important. Les commandes sont réalisées après paiement ; les modifications se discutent dans le chat de la commande. AfricansBiz peut suspendre un compte en cas d'abus.</p>`); };
+(async () => {
+  try{ const r = await api.services(); if(r.services?.length) services = r.services; }catch{}
+  rendreFamilles();
+  await rafraichirMoi();
+  route();
+  const lancer = () => { globe = creerGlobe(); globe?.visible(vueCourante==="accueil"); };
+  if(window.THREE) lancer(); else document.querySelector('script[src*="three"]')?.addEventListener("load", lancer);
+})();
+</script>
+</body>
+</html>

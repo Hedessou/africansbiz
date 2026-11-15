@@ -1,0 +1,12 @@
+# Les fonctions gèrent elles-mêmes l'authentification (jeton utilisateur ou secret partagé)
+[functions.api]
+verify_jwt = false
+
+[functions.inbound-email]
+verify_jwt = false
+
+[functions.inbound-sms]
+verify_jwt = false
+
+[functions.pay-webhook]
+verify_jwt = false
