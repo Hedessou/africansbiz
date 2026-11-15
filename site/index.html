@@ -817,7 +817,7 @@ function ouvrirConnexion(apres){
   ouvrirFeuille(enteteFeuille("Connexion", "Sans mot de passe : on t'envoie un code par email.") + `
     <div id="cEtape1"><div class="champ"><label for="cEmail">Ton email</label><input class="c" id="cEmail" type="email" autocomplete="email" placeholder="toi@gmail.com"></div>
     <button class="btn btn-plein btn-large" id="cEnvoyer">Recevoir mon code</button></div>
-    <div id="cEtape2" class="hide"><div class="champ"><label for="cCode">Code à 6 chiffres reçu par email</label><input class="c code-otp" id="cCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></div>
+    <div id="cEtape2" class="hide"><div class="champ"><label for="cCode">Code reçu par email</label><input class="c code-otp" id="cCode" inputmode="numeric" maxlength="10" autocomplete="one-time-code"></div>
     <button class="btn btn-plein btn-large" id="cValider">Me connecter</button><button class="btn btn-texte btn-large" id="cAutre" style="margin-top:6px">Changer d'email</button></div>`);
   let email = "";
   $("#cEnvoyer").onclick = async () => {
@@ -828,7 +828,7 @@ function ouvrirConnexion(apres){
     catch(e){ toast(e.message); } b.disabled=false; b.textContent="Recevoir mon code";
   };
   $("#cValider").onclick = async () => {
-    const code = $("#cCode").value.replace(/\D/g,""); if(code.length<6) return toast("Le code a 6 chiffres");
+    const code = $("#cCode").value.replace(/\D/g,""); if(code.length<6) return toast("Tape le code complet reçu par email");
     const b=$("#cValider"); b.disabled=true; b.innerHTML='<span class="spin"></span>';
     try{ session = await api.verifierCode(email, code); store.set("session", session); fermerFeuille(); await rafraichirMoi(); toast("Bienvenue !"); route(); apres?.(); }
     catch(e){ toast(e.message); } b.disabled=false; b.textContent="Me connecter";

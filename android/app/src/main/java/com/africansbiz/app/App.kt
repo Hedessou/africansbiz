@@ -921,7 +921,7 @@ fun Compte(s: AppState) {
         Column(Modifier.verticalScroll(rememberScrollState()).padding(20.dp).imePadding()) {
             if (s.session == null) {
                 Text("Sans mot de passe", style = MaterialTheme.typography.headlineSmall)
-                Text("On t'envoie un code à 6 chiffres par email. Le même compte marche sur le site et dans l'application.", color = cs.onSurfaceVariant)
+                Text("On t'envoie un code par email. Le même compte marche sur le site et dans l'application.", color = cs.onSurfaceVariant)
                 Spacer(Modifier.height(20.dp))
                 if (etape == 1) {
                     OutlinedTextField(email, { email = it.trim() }, label = { Text("Ton email") }, singleLine = true,
@@ -933,11 +933,11 @@ fun Compte(s: AppState) {
                         s.lancer { try { s.api.sendCode(email.lowercase()); etape = 2; s.toast(if (s.api.demo) "Démo : tape n'importe quel code" else "Code envoyé à $email") } finally { envoi = false } }
                     }) { Text("Recevoir mon code") }
                 } else {
-                    OutlinedTextField(code, { code = it.filter { c -> c.isDigit() }.take(6) }, label = { Text("Code à 6 chiffres") }, singleLine = true,
+                    OutlinedTextField(code, { code = it.filter { c -> c.isDigit() }.take(10) }, label = { Text("Code reçu par email") }, singleLine = true,
                         textStyle = Mono.copy(fontSize = 24.sp, letterSpacing = 8.sp), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword), modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(12.dp))
                     Button(enabled = !envoi, modifier = Modifier.fillMaxWidth().height(52.dp), onClick = {
-                        if (code.length < 6) { s.toast("Le code a 6 chiffres"); return@Button }
+                        if (code.length < 6) { s.toast("Tape le code complet reçu par email"); return@Button }
                         envoi = true
                         s.lancer {
                             try {
