@@ -96,7 +96,7 @@ begin
   update payments set status = 'approved', paid_at = now() where id = pay.id;
 
   if pay.order_id is not null then
-    update orders set status = 'payee', updated_at = now(), client_unread = client_unread
+    update orders set status = 'payee', updated_at = now(), admin_unread = admin_unread + 1
      where id = pay.order_id and status in ('a_payer','devis');
     insert into order_events (order_id, kind, label, detail)
       values (pay.order_id, 'status', 'Paiement confirmé', pay.amount || ' F reçus par Mobile Money');
