@@ -627,6 +627,17 @@ const RANG = {devis:1, a_payer:2, payee:3, en_cours:3, validation:4, livree:6, a
    SESSION ET API
    ========================================================= */
 let session = store.get("session");     // {access_token, refresh_token, expires_at, email}
+/* Connexion par lien e-mail : Supabase renvoie #access_token=...&refresh_token=... */
+(function lienMagique(){
+  const h = new URLSearchParams(location.hash.slice(1));
+  const at = h.get("access_token"); if(!at) return;
+  let email = null;
+  try{ email = JSON.parse(atob(at.split(".")[1].replace(/-/g,"+").replace(/_/g,"/"))).email; }catch{}
+  const exp = Number(h.get("expires_at")) || Math.floor(Date.now()/1000) + Number(h.get("expires_in")||3600);
+  session = {access_token:at, refresh_token:h.get("refresh_token"), expires_at:exp, email};
+  store.set("session", session);
+  history.replaceState(null, "", location.pathname + location.search + "#accueil");
+})();
 let moi = {plan:"free", credits:0, role:"client", email:null};
 
 async function jeton(){
