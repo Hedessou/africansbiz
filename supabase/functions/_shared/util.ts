@@ -50,7 +50,7 @@ export function safeEqual(a: string, b: string): boolean {
   return r === 0;
 }
 
-// Secret partagé avec le Worker e-mail Cloudflare et le relais SMS Termux.
+// Secret partagé avec le Worker e-mail Cloudflare.
 // Variable d'environnement INBOUND_SECRET si elle existe, sinon table privée « reglages » (mise en cache).
 let inboundCache: string | null = null;
 export async function inboundSecret(): Promise<string> {
@@ -79,7 +79,7 @@ export const ANNONCE_FORMULES: Record<string, { label: string; jours: number; pr
 };
 
 // Durée de vie d'une boîte mail selon le pack (en heures)
-export const MAIL_HOURS: Record<string, number> = { free: 1, bronze: 24, argent: 168, or: 168 };
+export const MAIL_HOURS: Record<string, number> = { free: 1, bronze: 24, argent: 168, or: 720 };
 
 // ---------- SasPay (https://docs.saspay.me) ----------
 // Clé secrète sk_test_… (test) ou sk_live_… (production), JAMAIS côté navigateur ou app.

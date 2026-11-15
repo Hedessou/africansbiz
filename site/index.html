@@ -340,13 +340,7 @@ textarea.c{min-height:110px;resize:vertical}
 .direct{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--palme);font-weight:500}
 .direct::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;animation:pouls 1.8s infinite}
 @keyframes pouls{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--palme) 50%,transparent)}100%{box-shadow:0 0 0 8px transparent}}
-.numeros{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
-.numero{padding:16px;display:flex;flex-direction:column;gap:12px}
-.numero .n{font-family:var(--mono);font-size:16px}
 .drapeau{font-size:26px;line-height:1}
-.sms{padding:14px 18px;border-top:1px solid var(--trait)}
-.sms .h{display:flex;justify-content:space-between;font-size:12.5px;color:var(--encre-3);margin-bottom:3px}
-.sms .h b{color:var(--encre)}
 .code{font-family:var(--mono);background:var(--laiton-pale);color:var(--sur-laiton-pale);padding:1px 6px;border-radius:5px;cursor:pointer}
 .packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
 .pack{padding:22px;display:flex;flex-direction:column;gap:12px}
@@ -449,7 +443,7 @@ textarea.c{min-height:110px;resize:vertical}
     <section class="section">
       <div class="carte bandeau-app">
         <div class="perle-app"><svg class="i" style="width:26px;height:26px"><use href="#i-tel"/></svg></div>
-        <div><h3>L'application Android</h3><p class="second">Tes commandes, ton chat, l'email temporaire et les numéros SMS dans ta poche. Même compte que sur le site.</p></div>
+        <div><h3>L'application Android</h3><p class="second">Tes commandes, ton chat et l'email temporaire dans ta poche. Même compte que sur le site.</p></div>
         <a class="btn btn-plein" href="app/">Télécharger l'app</a>
       </div>
     </section>
@@ -512,8 +506,7 @@ textarea.c{min-height:110px;resize:vertical}
 <!-- =================== OUTILS =================== -->
 <section class="vue" id="v-outils">
   <div class="wrap">
-    <div class="entete-vue"><div class="sur-titre">Outils gratuits</div><h1 style="margin-top:8px">Email jetable et numéros africains</h1><p>Protège ta vraie adresse et ton vrai numéro pour recevoir tes codes de confirmation.</p></div>
-    <div class="onglets" role="tablist"><button class="on" data-outil="mail">Email temporaire</button><button data-outil="sms">Numéros SMS</button></div>
+    <div class="entete-vue"><div class="sur-titre">Outils gratuits</div><h1 style="margin-top:8px">Ton adresse email jetable</h1><p>Protège ta vraie adresse : reçois tes codes de confirmation et tes inscriptions sur une adresse temporaire.</p></div>
 
     <div id="o-mail">
       <div class="carte" style="padding:22px;display:grid;gap:14px">
@@ -531,31 +524,10 @@ textarea.c{min-height:110px;resize:vertical}
       </div>
     </div>
 
-    <div id="o-sms" class="hide">
-      <div id="smsListeVue">
-        <div class="puces" id="pays"></div>
-        <div class="numeros" id="numeros"></div>
-        <div class="carte" style="padding:20px;margin-top:14px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between">
-          <div style="max-width:560px"><b>Un numéro rien qu'à toi ?</b><p class="second petit">Les numéros publics sont visibles par tous. Avec un pack VIP, tu loues un numéro privé pendant 20 minutes.</p></div>
-          <button class="btn btn-laiton" id="btnLouer">Louer un numéro privé</button>
-        </div>
-      </div>
-      <div id="smsDetailVue" class="hide">
-        <button class="retour" id="smsRetour"><svg class="i"><use href="#i-retour"/></svg>Tous les numéros</button>
-        <div class="carte" style="overflow:hidden">
-          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 18px">
-            <div style="display:flex;gap:12px;align-items:center"><span class="drapeau" id="sdDrapeau"></span><div><div class="mono" style="font-size:18px" id="sdNum"></div><div class="muet petit" id="sdInfo"></div></div></div>
-            <button class="btn btn-plein btn-petit" id="sdCopier"><svg class="i"><use href="#i-copie"/></svg>Copier</button>
-          </div>
-          <div id="sdListe"></div>
-        </div>
-      </div>
-    </div>
-
     <div class="pub" data-pub="outils">Espace publicitaire</div>
 
     <section class="section" id="packs-vip">
-      <div class="section-t"><div><div class="sur-titre">Packs VIP</div><h2 style="margin-top:8px">Plus de temps, plus de numéros, zéro pub</h2></div></div>
+      <div class="section-t"><div><div class="sur-titre">Packs VIP</div><h2 style="margin-top:8px">Plus de temps, ton adresse à toi, zéro pub</h2></div></div>
       <div class="packs" id="packs"></div>
     </section>
   </div>
@@ -714,9 +686,6 @@ const reel = {
   otpPaiement(id, otp){ return this.post("/pay/otp", {payment_id:id, otp}); },
   creerBoite(name, domain){ return this.post("/mailbox", {name, domain}); },
   mails(b){ return this.call(`/mailbox/messages?address=${encodeURIComponent(b.address)}&token=${encodeURIComponent(b.token)}`); },
-  numeros(){ return this.call("/numbers"); },
-  sms(id){ return this.call(`/numbers/${id}/sms`); },
-  louer(country){ return this.post("/rent", {country}); },
   formulesPub(){ return this.call("/annonces/formules"); },
   servirPub(){ return this.call("/annonces/servir"); },
   creerAnnonce(b){ return this.post("/annonces", b); },
@@ -756,13 +725,7 @@ const demo = (() => {
   const reponses = ["Bien reçu, je regarde ça tout de suite.","Merci ! Je te fais un retour dans la journée.","Parfait, c'est noté dans ta commande.","Bonne question : oui, c'est prévu dans le devis."];
 
   // ---- outils
-  const PAYS = {BJ:"229",TG:"228",CI:"225",SN:"221",NG:"234",GH:"233",CM:"237",BF:"226",KE:"254"};
-  const motifs = {BJ:()=>"01"+rnd(4,9)+chiffres(7),TG:()=>"9"+chiffres(7),CI:()=>"07"+chiffres(8),SN:()=>"77"+chiffres(7),NG:()=>"80"+rnd(3,9)+chiffres(7),GH:()=>"24"+chiffres(7),CM:()=>"6"+rnd(5,9)+chiffres(7),BF:()=>"7"+chiffres(7),KE:()=>"7"+chiffres(8)};
-  const exp = [["WhatsApp",c=>`Ton code WhatsApp : ${c.slice(0,3)}-${c.slice(3)}. Ne le partage avec personne.`],["Telegram",c=>`Code de connexion Telegram : ${c.slice(0,5)}.`],["Google",c=>`G-${c} est votre code de validation Google.`],["TikTok",c=>`[TikTok] ${c} est ton code de vérification.`],["Gozem",c=>`Gozem : votre code est ${c.slice(0,4)}.`]];
-  const unSms = m => { const [s,f]=exp[rnd(0,exp.length-1)]; return {sender:s, body:f(chiffres(6)), received_at:h(m)}; };
-  const nums = []; Object.keys(PAYS).forEach(p=>{ for(let i=0;i<(p==="BJ"?4:2);i++){ const n={id:p+i,e164:"+"+PAYS[p]+motifs[p](),country:p,sms:[]}; for(let k=0;k<rnd(3,8);k++) n.sms.push(unSms(rnd(1,600))); n.sms.sort((a,b)=>new Date(b.received_at)-new Date(a.received_at)); nums.push(n);} });
-  setInterval(()=>nums[rnd(0,nums.length-1)].sms.unshift(unSms(0)), 8000);
-  let boites = {}, location = null;
+  let boites = {};
 
   return {
     async envoyerCode(){ await wait(500); },
@@ -812,12 +775,6 @@ const demo = (() => {
       return b;
     },
     async mails(b){ const l=boites[b.address]||[]; const age=Date.now()-(b.cree||0); return {messages:l.map((m,i)=>({...m,id:b.address+i})).filter(m=>m.d<=age).map(m=>({id:m.id,from_addr:m.from,subject:m.subject,body_html:m.html,received_at:new Date(b.cree+m.d).toISOString()})).reverse()}; },
-    async numeros(){ return {numbers:nums.map(n=>({id:n.id,e164:n.e164,country:n.country,last_sms_at:n.sms[0]?.received_at,sms_24h:n.sms.length}))}; },
-    async sms(id){ if(location&&location.id===id) return {private:true,rented_until:location.rented_until,sms:location.sms}; return {sms:(nums.find(n=>n.id===id)||{sms:[]}).sms}; },
-    async louer(country){ await wait(500); if(moi.plan==="free") throw new Error("Location réservée aux membres VIP"); if(moi.credits<=0) throw new Error("Plus de locations sur ton pack");
-      const m=store.get("demo_moi")||{}; m.credits=(m.credits||0)-1; store.set("demo_moi",m); moi.credits=m.credits;
-      location={id:"R"+Date.now(),e164:"+"+PAYS[country]+motifs[country](),country,rented_until:new Date(Date.now()+20*60000).toISOString(),sms:[]};
-      setTimeout(()=>location.sms.unshift(unSms(0)),9000); return {number:location}; },
     async formulesPub(){ return {formules:{semaine:{label:"1 semaine",jours:7,prix:2500},mois:{label:"1 mois",jours:30,prix:8000}}}; },
     async servirPub(){ return {annonce:null}; },
     async creerAnnonce(b){ await wait(300); const a={id:"A"+Date.now(), ...b, jours:b.formule==="mois"?30:7, prix:b.formule==="mois"?8000:2500, statut:"a_payer", vues:0, clics:0, created_at:new Date().toISOString()}; annoncesDemo.unshift(a); return {annonce:a}; },
@@ -883,7 +840,6 @@ function ouvrirCompte(){
   const p = PACKS.find(p=>p.id===moi.plan) || PACKS[0];
   ouvrirFeuille(enteteFeuille("Mon compte", esc(moi.email||session.email||"")) + `
     <div class="recap"><span>Pack outils</span><b>${p.nom}${moi.plan!=="free"&&moi.plan_until?` · jusqu'au ${new Date(moi.plan_until).toLocaleDateString("fr-FR")}`:""}</b></div>
-    ${moi.plan!=="free"?`<div class="recap"><span>Locations de numéros restantes</span><b class="mono">${moi.credits}</b></div>`:""}
     ${DEMO?`<div class="recap"><span>Démo : voir comme administrateur</span><button class="btn btn-tonal btn-petit" id="basculeAdmin">${moi.role==="admin"?"Passer en client":"Passer en admin"}</button></div>`:""}
     <a class="btn btn-contour btn-large" href="#commandes" data-fermer style="margin-bottom:8px">Mes commandes</a>
     <button class="btn btn-texte btn-large" id="deconnexion">Se déconnecter</button>`);
@@ -1141,14 +1097,10 @@ $("#filtresAdmin").addEventListener("click", e=>{ const b=e.target.closest("[dat
 $("#listeAdmin").addEventListener("click", e=>{ const b=e.target.closest("[data-cmd]"); if(b) ouvrirCommande(b.dataset.cmd,"admin"); });
 
 /* =========================================================
-   OUTILS : email temporaire et numéros SMS
+   OUTILS : email temporaire
    ========================================================= */
-const PAYS = [["BJ","Bénin","🇧🇯","229"],["TG","Togo","🇹🇬","228"],["CI","Côte d'Ivoire","🇨🇮","225"],["SN","Sénégal","🇸🇳","221"],["NG","Nigeria","🇳🇬","234"],["GH","Ghana","🇬🇭","233"],["CM","Cameroun","🇨🇲","237"],["BF","Burkina Faso","🇧🇫","226"],["KE","Kenya","🇰🇪","254"]].map(([code,nom,drapeau,ind])=>({code,nom,drapeau,ind}));
-const P = Object.fromEntries(PAYS.map(p=>[p.code,p]));
-const fmtNum = e => { const p=PAYS.find(p=>e.startsWith("+"+p.ind)); return p ? "+"+p.ind+" "+e.slice(p.ind.length+1).replace(/(\d{2})(?=\d)/g,"$1 ") : e; };
 let boite = store.get("boite"), vus = new Set(store.get("vus")||[]), mails = [], mMin, mCompte, outilsDemarres = false;
 function demarrerOutils(){ if(outilsDemarres) return; outilsDemarres = true; if(!boite || new Date(boite.expires_at)<Date.now()) nouvelleBoite(); else { afficherBoite(); sonderMails(); } }
-$$("[data-outil]").forEach(b=>b.onclick=()=>{ $$("[data-outil]").forEach(x=>x.classList.toggle("on",x===b)); $("#o-mail").classList.toggle("hide",b.dataset.outil!=="mail"); $("#o-sms").classList.toggle("hide",b.dataset.outil!=="sms"); if(b.dataset.outil==="sms") chargerNumeros(); });
 async function nouvelleBoite(nom, dom){
   $("#adresse").innerHTML='<span class="spin" style="display:inline-block"></span>';
   try{ const b = await api.creerBoite(nom, dom); boite = {...b, cree:b.cree||Date.now()}; store.set("boite",boite); vus=new Set(); store.set("vus",[]); mails=[]; afficherBoite(); afficherMails([]); sonderMails(); return true; }
@@ -1183,44 +1135,11 @@ $("#mPerso").onclick = () => {
   $("#pnOk").onclick = async () => { const n=$("#pnNom").value.trim().toLowerCase(); if(!/^[a-z0-9][a-z0-9._-]{2,29}$/.test(n)) return toast("3 à 30 caractères : lettres, chiffres, . _ -"); if(await nouvelleBoite(n,$("#pnDom").value)){ fermerFeuille(); toast("Adresse créée"); } };
 };
 
-let numeros=[], filtrePays="tout", numCourant=null, smsMin;
-async function chargerNumeros(){
-  try{ numeros = (await api.numeros()).numbers||[]; }catch(e){ $("#numeros").innerHTML=`<div class="carte vide" style="grid-column:1/-1">${esc(e.message)}</div>`; return; }
-  const nb={}; numeros.forEach(n=>nb[n.country]=(nb[n.country]||0)+1);
-  $("#pays").innerHTML = [{code:"tout",nom:"Tous",drapeau:"🌍"},...PAYS.filter(p=>nb[p.code])].map(p=>`<button class="puce ${filtrePays===p.code?"on":""}" data-p="${p.code}">${p.drapeau} ${esc(p.nom)}${p.code!=="tout"?" · "+nb[p.code]:""}</button>`).join("");
-  const l = numeros.filter(n=>filtrePays==="tout"||n.country===filtrePays);
-  $("#numeros").innerHTML = l.map(n=>{ const p=P[n.country]||{drapeau:"🏳️",nom:n.country}; return `<div class="carte numero"><div style="display:flex;gap:10px;align-items:center"><span class="drapeau">${p.drapeau}</span><div><div class="n">${esc(fmtNum(n.e164))}</div><div class="muet petit">${esc(p.nom)}</div></div></div><div style="display:flex;justify-content:space-between" class="muet petit"><span>${n.last_sms_at?"Dernier SMS "+ago(n.last_sms_at):"Aucun SMS"}</span><span class="mono">${n.sms_24h||0} SMS</span></div><div style="display:flex;gap:8px"><button class="btn btn-contour btn-petit" style="flex:1" data-cp="${esc(n.e164)}">${ic("copie")}Copier</button><button class="btn btn-plein btn-petit" style="flex:1" data-ouv="${esc(n.id)}">Voir les SMS</button></div></div>`; }).join("") || `<div class="carte vide" style="grid-column:1/-1">Aucun numéro disponible pour ce pays.</div>`;
-}
-$("#pays").addEventListener("click", e=>{ const b=e.target.closest("[data-p]"); if(b){ filtrePays=b.dataset.p; chargerNumeros(); } });
-$("#numeros").addEventListener("click", e=>{ const c=e.target.closest("[data-cp]"); if(c) return copier(c.dataset.cp,"Numéro copié"); const o=e.target.closest("[data-ouv]"); if(o) ouvrirNumero(numeros.find(n=>n.id===o.dataset.ouv)); });
-function ouvrirNumero(n, prive=false){
-  numCourant={...n,prive}; const p=P[n.country]||{drapeau:"🏳️",nom:n.country};
-  $("#sdDrapeau").textContent=p.drapeau; $("#sdNum").textContent=fmtNum(n.e164);
-  $("#sdInfo").textContent = prive ? "Numéro privé : toi seul vois ces SMS" : p.nom+" · numéro public, visible par tous";
-  $("#smsListeVue").classList.add("hide"); $("#smsDetailVue").classList.remove("hide"); sonderSms();
-}
-async function sonderSms(){
-  clearTimeout(smsMin); if(!numCourant) return;
-  try{ const r=await api.sms(numCourant.id); if(r.private){ const m=Math.round((new Date(r.rented_until)-Date.now())/60000); $("#sdInfo").textContent = m>0?`Numéro privé · encore ${m} min`:"Location terminée"; }
-    const l=r.sms||[]; $("#sdListe").innerHTML = l.length ? l.map(s=>`<div class="sms"><div class="h"><b>${esc(s.sender)}</b><span>${ago(s.received_at)}</span></div><div>${esc(s.body).replace(/\b(\d{3}[- ]?\d{3}|\d{4,8})\b/g,m=>`<span class="code" data-code="${m.replace(/\D/g,"")}">${m}</span>`)}</div></div>`).join("") : `<div class="vide" style="border-top:1px solid var(--trait)"><h3>En attente de SMS…</h3><p class="petit">Envoie ton code sur ce numéro.</p></div>`;
-  }catch(e){ $("#sdListe").innerHTML=`<div class="vide">${esc(e.message)}</div>`; }
-  smsMin=setTimeout(sonderSms, numCourant.prive?4000:8000);
-}
-$("#sdListe").addEventListener("click", e=>{ const c=e.target.closest(".code"); if(c) copier(c.dataset.code,"Code copié : "+c.dataset.code); });
-$("#smsRetour").onclick = () => { numCourant=null; clearTimeout(smsMin); $("#smsDetailVue").classList.add("hide"); $("#smsListeVue").classList.remove("hide"); chargerNumeros(); };
-$("#sdCopier").onclick = () => numCourant && copier(numCourant.e164,"Numéro copié");
-$("#btnLouer").onclick = () => {
-  if(!exigerConnexion()) return;
-  if(moi.plan==="free"){ toast("Choisis d'abord un pack VIP"); return document.getElementById("packs-vip").scrollIntoView(); }
-  ouvrirFeuille(enteteFeuille("Louer un numéro privé", `Il te reste ${moi.credits} location(s)`) + `<div class="champ"><label for="lPays">Pays</label><select class="c" id="lPays">${PAYS.map(p=>`<option value="${p.code}">${p.drapeau} ${esc(p.nom)} (+${p.ind})</option>`).join("")}</select></div><button class="btn btn-plein btn-large" id="lOk">Louer pour 20 minutes</button>`);
-  $("#lOk").onclick = async () => { try{ const {number}=await api.louer($("#lPays").value); fermerFeuille(); rafraichirMoi(); ouvrirNumero(number,true); toast("Numéro loué pour 20 min"); }catch(e){ toast(e.message); } };
-};
-
 const PACKS = [
-  {id:"free", nom:"Gratuit", prix:0, duree:"", av:["Email valable 1 heure","Numéros publics illimités","Avec publicités"]},
-  {id:"bronze", nom:"Bronze", prix:500, duree:"7 jours", av:["Sans publicité","Email valable 24 heures","Adresse personnalisée","3 numéros privés"]},
-  {id:"argent", nom:"Argent", prix:2000, duree:"30 jours", top:true, av:["Tout Bronze","Email valable 7 jours","15 numéros privés"]},
-  {id:"or", nom:"Or", prix:5000, duree:"30 jours", av:["Tout Argent","50 numéros privés","Plusieurs adresses à la fois"]}
+  {id:"free", nom:"Gratuit", prix:0, duree:"", av:["Email valable 1 heure","+24 h par vidéo regardée dans l'app","Avec publicités"]},
+  {id:"bronze", nom:"Bronze", prix:500, duree:"7 jours", av:["Sans publicité","Email valable 24 heures","Adresse personnalisée"]},
+  {id:"argent", nom:"Argent", prix:2000, duree:"30 jours", top:true, av:["Tout Bronze","Email valable 7 jours"]},
+  {id:"or", nom:"Or", prix:5000, duree:"30 jours", av:["Tout Argent","Email valable 30 jours"]}
 ];
 function rendrePacks(){
   $("#packs").innerHTML = PACKS.map(p=>`<div class="carte pack ${p.top?"mis-en-avant":""}">

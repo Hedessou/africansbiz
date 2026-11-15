@@ -6,7 +6,7 @@ Une seule plateforme, deux portes d'entrée : **africansbiz.com** et l'**applica
 - **Suivi de livraison** : chaque commande a un *bordereau* et un fil de 6 perles (Commande → Devis → Paiement → Réalisation → Validation → Livrée), un historique et des livrables.
 - **Chat sécurisé par commande** : seuls le client et toi (administrateur) le voient.
 - **Paiement SasPay sans redirection** : la demande arrive sur le téléphone du client (MTN, Moov, Celtiis…).
-- **Outils** : email temporaire, numéros africains pour recevoir des SMS, packs VIP.
+- **Outils** : email temporaire (prolongeable par vidéo dans l'app), packs VIP, espace annonceurs.
 - **Administration** : envoyer un devis, faire avancer les étapes, livrer, répondre aux clients (site ET application).
 
 ## Contenu
@@ -16,12 +16,13 @@ Une seule plateforme, deux portes d'entrée : **africansbiz.com** et l'**applica
 | `site/index.html` | Le site complet (un fichier). Mode démo tant que `CONFIG` est vide. |
 | `android/` | Application Android (Kotlin, Jetpack Compose, Material 3). Mode démo tant que les secrets ne sont pas définis. |
 | `.github/workflows/android.yml` | Compile l'APK sur GitHub à chaque modification et le publie dans *Releases*. |
-| `supabase/migrations/001_schema.sql` | Outils (mails, numéros, SMS), packs, paiements. |
+| `supabase/migrations/001_schema.sql` … `006_*.sql` | Mails, packs, paiements, commandes, annonces, récompenses vidéo. |
 | `supabase/migrations/002_commandes.sql` | Catalogue, commandes, historique, chat, rôles. Catalogue de 17 services déjà rempli. |
 | `supabase/functions/api` | L'API utilisée par le site ET l'application. |
 | `supabase/functions/pay-webhook` | Notifications SasPay (signature vérifiée). |
-| `supabase/functions/inbound-email`, `inbound-sms` | Réception des mails et SMS. |
-| `cloudflare-email-worker/`, `termux-sms-forwarder/` | Réception des mails (Cloudflare) et des SMS (téléphones relais). |
+| `supabase/functions/inbound-email` | Réception des mails temporaires. |
+| `supabase/functions/admob-reward` | Vérification des vidéos récompensées AdMob (+24 h sur l'adresse). |
+| `cloudflare-email-worker/` | Réception des mails (Cloudflare Email Routing). |
 
 ## Mise en route
 
@@ -36,7 +37,7 @@ Une seule plateforme, deux portes d'entrée : **africansbiz.com** et l'**applica
 | `SASPAY_WEBHOOK_SECRET` | secret affiché une seule fois à la création du webhook SasPay |
 | `SASPAY_FEE_MODE` | optionnel : `ADD_ON` (frais payés par le client) ou `DEDUCTED` |
 | `PAY_COUNTRIES` | optionnel : `BJ` par défaut, ex. `BJ,TG,CI` |
-| `INBOUND_SECRET` | longue phrase aléatoire (Worker mails + téléphones relais SMS) |
+| `INBOUND_SECRET` | facultatif : sinon le secret généré dans la table `reglages` est utilisé (Worker mails) |
 | `MAIL_DOMAINS` | `africansbiz.com` |
 | `IP_SALT` | chaîne aléatoire |
 | `SITE_ORIGIN` | `https://africansbiz.com` |
@@ -47,7 +48,7 @@ supabase link --project-ref TON_REF
 supabase functions deploy api --no-verify-jwt
 supabase functions deploy pay-webhook --no-verify-jwt
 supabase functions deploy inbound-email --no-verify-jwt
-supabase functions deploy inbound-sms --no-verify-jwt
+supabase functions deploy admob-reward --no-verify-jwt
 ```
 5. **Authentication → Email Templates → Magic Link** : ajoute `{{ .Token }}` dans le message pour que le client reçoive un **code à 6 chiffres** (c'est ce que demandent le site et l'app). Exemple de message : « Ton code AfricansBiz : {{ .Token }} ».
 6. **Authentication → URL Configuration** : *Site URL* = `https://africansbiz.com`.
@@ -81,11 +82,8 @@ Le domaine reste chez LWS ; on confie seulement le DNS à Cloudflare (gratuit), 
 4. Android 7.0 minimum. Thème clair/sombre automatique.
 5. Pour le Play Store : crée ta propre clé de signature et remplace `signingConfigs.getByName("debug")` dans `android/app/build.gradle.kts`.
 
-### 6. Numéros SMS
-Voir `termux-sms-forwarder/relais-sms.sh` : un vieux téléphone Android + une SIM dédiée + Termux. Enregistre chaque numéro :
-```sql
-insert into numbers (e164, country, is_public) values ('+2290197000000', 'BJ', true);
-```
+### 6. Numéros SMS : retirés
+Les numéros SMS ont été retirés du projet : au Bénin, chaque SIM est enregistrée à l'identité de son propriétaire, qui serait tenu responsable des abus. La fonction `inbound-sms` répond désormais « 410 Service retiré ».
 
 ## Modifier le catalogue et les prix
 Directement dans Supabase → **Table Editor → services** (prix, description, délai, questions du formulaire, `actif` pour masquer). Le site et l'application se mettent à jour tout seuls.

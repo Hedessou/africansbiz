@@ -6,8 +6,6 @@
 //   GET  /pay/networks             réseaux Mobile Money disponibles
 //   POST /mailbox                  créer une boîte mail temporaire
 //   GET  /mailbox/messages         lire les mails (address + token)
-//   GET  /numbers                  numéros publics
-//   GET  /numbers/:id/sms          SMS d'un numéro
 //   GET  /annonces/formules        tarifs de l'espace annonceurs
 //   GET  /annonces/servir          une annonce active au hasard (compte une vue)
 //   GET  /annonces/clic/:id        compte le clic puis redirige vers l'annonceur
@@ -23,7 +21,6 @@
 //   POST /pay/init                 acheter un pack VIP
 //   POST /pay/otp                  code OTP après push (certains réseaux)
 //   GET  /pay/status?id=           suivi d'un paiement
-//   POST /rent                     louer un numéro privé (VIP ou crédit gagné en vidéo)
 //   POST /annonces                 créer une annonce {formule, titre, texte, lien}
 //   GET  /annonces[?all=1]         mes annonces (toutes si admin)
 //   POST /annonces/:id/payer       payer l'annonce (SasPay)
@@ -215,47 +212,10 @@ Deno.serve(async (req) => {
       if (new Date(mb.expires_at) < new Date()) return err("Boîte expirée", 404);
       const { data } = await admin.from("emails").select("id, from_addr, subject, body_text, body_html, received_at")
         .eq("mailbox_id", mb.id).order("received_at", { ascending: false }).limit(50);
-      return json({ messages: data ?? [] });
+      return json({ messages: data ?? [], expires_at: mb.expires_at });
     }
 
-    if (req.method === "GET" && path === "/numbers") {
-      const now = new Date().toISOString();
-      const { data: nums } = await admin.from("numbers").select("id, e164, country, rented_until, last_seen_at")
-        .eq("active", true).eq("is_public", true);
-      const visible = (nums ?? []).filter((n) =>
-        (!n.rented_until || n.rented_until < now) &&
-        (!n.last_seen_at || Date.now() - new Date(n.last_seen_at).getTime() < 15 * 60e3)
-      );
-      const since = new Date(Date.now() - 24 * 3600e3).toISOString();
-      const { data: recent } = await admin.from("sms").select("number_id, received_at")
-        .in("number_id", visible.length ? visible.map((n) => n.id) : ["00000000-0000-0000-0000-000000000000"])
-        .is("owner", null).gte("received_at", since);
-      const stats: Record<string, { c: number; last: string }> = {};
-      for (const s of recent ?? []) {
-        const st = (stats[s.number_id] ??= { c: 0, last: s.received_at });
-        st.c++; if (s.received_at > st.last) st.last = s.received_at;
-      }
-      return json({
-        numbers: visible.map((n) => ({ id: n.id, e164: n.e164, country: n.country, sms_24h: stats[n.id]?.c ?? 0, last_sms_at: stats[n.id]?.last ?? null }))
-          .sort((a, b) => (b.last_sms_at ?? "").localeCompare(a.last_sms_at ?? "")),
-      });
-    }
-
-    let m = path.match(new RegExp(`^/numbers/(${UUID})/sms$`));
-    if (req.method === "GET" && m) {
-      const { data: n } = await admin.from("numbers").select("id, is_public, rented_by, rented_until").eq("id", m[1]).maybeSingle();
-      if (!n) return err("Numéro introuvable", 404);
-      const rentedByMe = user && n.rented_by === user.id && n.rented_until && new Date(n.rented_until) > new Date();
-      if (rentedByMe) {
-        const { data } = await admin.from("sms").select("sender, body, received_at").eq("number_id", n.id)
-          .eq("owner", user!.id).order("received_at", { ascending: false }).limit(30);
-        return json({ private: true, rented_until: n.rented_until, sms: data ?? [] });
-      }
-      if (!n.is_public) return err("Numéro privé", 403);
-      const { data } = await admin.from("sms").select("sender, body, received_at").eq("number_id", n.id)
-        .is("owner", null).order("received_at", { ascending: false }).limit(50);
-      return json({ sms: data ?? [] });
-    }
+    let m: RegExpMatchArray | null = null;
 
     // ---------- Annonces (public) ----------
     if (req.method === "GET" && path === "/annonces/formules") return json({ formules: ANNONCE_FORMULES });
@@ -458,21 +418,6 @@ Deno.serve(async (req) => {
         await admin.from("annonces").update({ statut: "refusee", motif: String(body.motif ?? "").slice(0, 300) || "Annonce refusée" }).eq("id", a.id);
       }
       return json({ ok: true });
-    }
-
-    // ---------- Location d'un numéro privé ----------
-    if (req.method === "POST" && path === "/rent") {
-      const { country } = await req.json().catch(() => ({}));
-      const { data, error } = await admin.rpc("rent_number", { p_user: user.id, p_country: String(country ?? "").toUpperCase(), p_minutes: 20 });
-      if (error) {
-        const msg = error.message.includes("VIP_REQUIRED") ? "Location réservée aux VIP. Astuce : regarde une vidéo dans l'app pour gagner un crédit"
-          : error.message.includes("NO_CREDITS") ? "Plus de locations disponibles sur ton pack"
-          : error.message.includes("NO_NUMBER") ? "Aucun numéro libre dans ce pays pour le moment, réessaie dans quelques minutes"
-          : "Location impossible";
-        return err(msg, 409);
-      }
-      const n = Array.isArray(data) ? data[0] : data;
-      return json({ number: { id: n.id, e164: n.e164, country: n.country, rented_until: n.rented_until } });
     }
 
     // ---------- Paiement d'un pack VIP ----------

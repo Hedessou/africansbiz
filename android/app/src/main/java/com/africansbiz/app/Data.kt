@@ -39,8 +39,7 @@ data class Me(val email: String?, val plan: String, val credits: Int, val role: 
 }
 data class Mailbox(val address: String, val token: String, val expiresAt: String, val createdMs: Long)
 data class Mail(val id: String, val from: String, val subject: String, val html: String, val text: String, val receivedAt: String)
-data class Phone(val id: String, val e164: String, val country: String, val sms24h: Int, val lastSmsAt: String?, val rentedUntil: String? = null)
-data class Sms(val sender: String, val body: String, val receivedAt: String)
+data class Inbox(val mails: List<Mail>, val expiresAt: String?)
 data class Session(val access: String, val refresh: String, val expiresAt: Long, val email: String) {
     // Identifiant Supabase de l'utilisateur (champ "sub" du jeton), utilisé pour les récompenses vidéo
     fun userId(): String? = try {
@@ -51,9 +50,9 @@ data class Session(val access: String, val refresh: String, val expiresAt: Long,
 data class Annonce(val titre: String, val texte: String, val url: String)
 data class Pack(val id: String, val nom: String, val prix: Int, val duree: String, val avantages: List<String>)
 val PACKS = listOf(
-    Pack("bronze", "Bronze", 500, "7 jours", listOf("Sans publicité", "Email valable 24 heures", "Adresse personnalisée", "3 numéros privés")),
-    Pack("argent", "Argent", 2000, "30 jours", listOf("Tout Bronze", "Email valable 7 jours", "15 numéros privés")),
-    Pack("or", "Or", 5000, "30 jours", listOf("Tout Argent", "50 numéros privés", "Plusieurs adresses à la fois")),
+    Pack("bronze", "Bronze", 500, "7 jours", listOf("Sans publicité", "Email valable 24 heures", "Adresse personnalisée")),
+    Pack("argent", "Argent", 2000, "30 jours", listOf("Tout Bronze", "Email valable 7 jours")),
+    Pack("or", "Or", 5000, "30 jours", listOf("Tout Argent", "Email valable 30 jours")),
 )
 
 class ApiException(message: String) : Exception(message)
@@ -125,12 +124,9 @@ interface Backend {
     suspend fun payStatus(paymentId: String): String
     suspend fun payOtp(paymentId: String, otp: String)
     suspend fun payPack(pack: String, network: String, phone: String, name: String): PayStart
-    suspend fun rent(country: String): Phone
     suspend fun annonce(): Annonce?
     suspend fun createMailbox(): Mailbox
-    suspend fun mails(box: Mailbox): List<Mail>
-    suspend fun phones(): List<Phone>
-    suspend fun sms(id: String): List<Sms>
+    suspend fun mails(box: Mailbox): Inbox
 }
 
 // ---------- stockage de la session (téléphone uniquement) ----------
@@ -251,10 +247,6 @@ class RealBackend(private val url: String, private val anon: String, private val
         val j = api("POST", "/pay/init", JSONObject().put("pack", pack).put("network", network).put("phone", phone).put("full_name", name).put("country", "BJ"))
         return PayStart(j.str("payment_id"), j.str("instructions"), j.optBoolean("otp_after_push"), j.strOrNull("checkout_url"))
     }
-    override suspend fun rent(country: String): Phone {
-        val n = api("POST", "/rent", JSONObject().put("country", country)).getJSONObject("number")
-        return Phone(n.str("id"), n.str("e164"), n.str("country"), 0, null, n.strOrNull("rented_until"))
-    }
     override suspend fun annonce(): Annonce? {
         val a = api("GET", "/annonces/servir").optJSONObject("annonce") ?: return null
         return Annonce(a.str("titre"), a.str("texte"), a.str("url"))
@@ -263,12 +255,10 @@ class RealBackend(private val url: String, private val anon: String, private val
         val j = api("POST", "/mailbox", JSONObject())
         return Mailbox(j.str("address"), j.str("token"), j.str("expires_at"), System.currentTimeMillis())
     }
-    override suspend fun mails(box: Mailbox) = api("GET", "/mailbox/messages?address=" + URLEncoder.encode(box.address, "UTF-8") + "&token=" + URLEncoder.encode(box.token, "UTF-8"))
-        .getJSONArray("messages").objects().map { Mail(it.str("id"), it.str("from_addr"), it.str("subject"), it.str("body_html"), it.str("body_text"), it.str("received_at")) }
-    override suspend fun phones() = api("GET", "/numbers").getJSONArray("numbers").objects()
-        .map { Phone(it.str("id"), it.str("e164"), it.str("country"), it.optInt("sms_24h"), it.strOrNull("last_sms_at")) }
-    override suspend fun sms(id: String) = api("GET", "/numbers/$id/sms").getJSONArray("sms").objects()
-        .map { Sms(it.str("sender"), it.str("body"), it.str("received_at")) }
+    override suspend fun mails(box: Mailbox): Inbox {
+        val j = api("GET", "/mailbox/messages?address=" + URLEncoder.encode(box.address, "UTF-8") + "&token=" + URLEncoder.encode(box.token, "UTF-8"))
+        return Inbox(j.getJSONArray("messages").objects().map { Mail(it.str("id"), it.str("from_addr"), it.str("subject"), it.str("body_html"), it.str("body_text"), it.str("received_at")) }, j.strOrNull("expires_at"))
+    }
 }
 
 // =========================================================
@@ -332,12 +322,6 @@ class DemoBackend : Backend {
         delay(600); val p = "P" + System.currentTimeMillis(); paiement = Triple(p, "pack:$pack", System.currentTimeMillis())
         return PayStart(p, "Démo : le paiement sera confirmé dans 5 secondes.", false, null)
     }
-    override suspend fun rent(country: String): Phone {
-        delay(500)
-        if (credits <= 0) throw ApiException(if (plan == "free") "Location réservée aux VIP. Astuce : regarde une vidéo pour gagner un crédit" else "Plus de locations disponibles sur ton pack")
-        credits--
-        return Phone("R" + System.currentTimeMillis(), "+229019" + Random.nextInt(1000000, 9999999), country, 0, null, nowIso(-20))
-    }
     override suspend fun annonce(): Annonce? = null
     override suspend fun payStatus(paymentId: String): String {
         val p = paiement ?: return "FAILED"
@@ -357,18 +341,11 @@ class DemoBackend : Backend {
         val n = listOf("kofi", "ama", "sena", "yao", "afi", "edem")[Random.nextInt(6)] + "." + Random.nextInt(1000, 9999)
         return Mailbox("$n@africansbiz.com", "demo", nowIso(-60), System.currentTimeMillis())
     }
-    override suspend fun mails(box: Mailbox): List<Mail> {
+    override suspend fun mails(box: Mailbox): Inbox {
         val age = System.currentTimeMillis() - box.createdMs
-        return buildList {
+        return Inbox(buildList {
             if (age > 12_000) add(Mail("2", "MaBoutique (exemple) <no-reply@exemple.com>", "Confirme ton adresse", "", "Ton code de confirmation : 482913", nowIso()))
             if (age > 4_000) add(Mail("1", "AfricansBiz <bonjour@africansbiz.com>", "Ta boîte temporaire est prête", "", "Les mails envoyés à ${box.address} arrivent ici automatiquement.", nowIso()))
-        }
+        }, box.expiresAt)
     }
-    private val demoPhones = listOf(Phone("BJ1", "+2290196123456", "BJ", 7, nowIso(3)), Phone("BJ2", "+2290154987321", "BJ", 4, nowIso(12)), Phone("TG1", "+22890123456", "TG", 5, nowIso(20)), Phone("CI1", "+2250712345678", "CI", 3, nowIso(45)), Phone("SN1", "+221771234567", "SN", 2, nowIso(80)))
-    override suspend fun phones() = demoPhones
-    override suspend fun sms(id: String) = listOf(
-        Sms("WhatsApp", "Ton code WhatsApp : ${Random.nextInt(100, 999)}-${Random.nextInt(100, 999)}. Ne le partage avec personne.", nowIso(1)),
-        Sms("Telegram", "Code de connexion Telegram : ${Random.nextInt(10000, 99999)}.", nowIso(9)),
-        Sms("Google", "G-${Random.nextInt(100000, 999999)} est votre code de validation Google.", nowIso(31)),
-    )
 }

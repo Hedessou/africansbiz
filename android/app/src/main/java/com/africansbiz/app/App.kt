@@ -787,19 +787,11 @@ fun Discussion(s: AppState, id: String, admin: Boolean) {
 // =========================================================
 // OUTILS : email temporaire et numéros SMS
 // =========================================================
-private val PAYS = mapOf("BJ" to "🇧🇯 Bénin", "TG" to "🇹🇬 Togo", "CI" to "🇨🇮 Côte d'Ivoire", "SN" to "🇸🇳 Sénégal", "NG" to "🇳🇬 Nigeria", "GH" to "🇬🇭 Ghana", "CM" to "🇨🇲 Cameroun", "BF" to "🇧🇫 Burkina Faso", "KE" to "🇰🇪 Kenya")
 private val CODE = Regex("\\b(\\d{3}[- ]?\\d{3}|\\d{4,8})\\b")
 
 @Composable
 fun Outils(s: AppState) {
-    var onglet by remember { mutableIntStateOf(0) }
-    Column(Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = onglet) {
-            Tab(selected = onglet == 0, onClick = { onglet = 0 }, text = { Text("Email temporaire") }, icon = { Icon(Icons.Outlined.Mail, null) })
-            Tab(selected = onglet == 1, onClick = { onglet = 1 }, text = { Text("Numéros SMS") }, icon = { Icon(Icons.Outlined.PhoneAndroid, null) })
-        }
-        if (onglet == 0) EmailTemporaire(s) else NumerosSms(s)
-    }
+    EmailTemporaire(s)
 }
 
 @Composable
@@ -809,12 +801,27 @@ fun EmailTemporaire(s: AppState) {
     var mails by remember { mutableStateOf<List<Mail>>(emptyList()) }
     var ouvert by remember { mutableStateOf<Mail?>(null) }
     var cle by remember { mutableIntStateOf(0) }
+    var cle2 by remember { mutableIntStateOf(0) }
+    LaunchedEffect(cle2) {
+        // Après une vidéo : relit la boîte quelques fois pour récupérer la nouvelle heure d'expiration
+        if (cle2 == 0) return@LaunchedEffect
+        repeat(3) {
+            delay(2500)
+            boite?.let { b -> try { val r = s.api.mails(b); if (r.expiresAt != null) { val nb = b.copy(expiresAt = r.expiresAt); boite = nb; s.store.setMailbox(nb) } } catch (_: Exception) { } }
+        }
+    }
     LaunchedEffect(cle) {
         if (boite == null || cle > 0) {
             try { val b = s.api.createMailbox(); boite = b; s.store.setMailbox(b); mails = emptyList() } catch (e: Exception) { s.toast(e.message ?: "Erreur") }
         }
         while (true) {
-            boite?.let { b -> try { mails = s.api.mails(b) } catch (_: Exception) { } }
+            boite?.let { b ->
+                try {
+                    val r = s.api.mails(b); mails = r.mails
+                    // L'adresse a pu être prolongée (vidéo regardée) : on met à jour l'heure d'expiration
+                    if (r.expiresAt != null && r.expiresAt != b.expiresAt) { val nb = b.copy(expiresAt = r.expiresAt); boite = nb; s.store.setMailbox(nb) }
+                } catch (_: Exception) { }
+            }
             delay(5000)
         }
     }
@@ -831,8 +838,19 @@ fun EmailTemporaire(s: AppState) {
                     }
                     OutlinedButton(onClick = { cle++ }) { Icon(Icons.Outlined.Refresh, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Nouvelle") }
                 }
-                boite?.let { b -> Text("Expire à ${heure(b.expiresAt)}, puis tout est effacé", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant, modifier = Modifier.padding(top = 10.dp)) }
+                boite?.let { b -> Text("Expire le ${dateHeure(b.expiresAt)}, puis tout est effacé", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant, modifier = Modifier.padding(top = 10.dp)) }
             }
+        }
+        item {
+            BoutonVideo(s, boite?.address) {
+                // Mode démo : on prolonge directement l'adresse dans le téléphone
+                if (s.api.demo) boite?.let { b -> parseIso(b.expiresAt)?.let { t ->
+                    val df = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", java.util.Locale.US).apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }
+                    val nb = b.copy(expiresAt = df.format(java.util.Date(t.time + 24 * 3_600_000L))); boite = nb; s.store.setMailbox(nb)
+                } }
+                cle2++
+            }
+            Text("Chaque vidéo regardée jusqu'au bout prolonge cette adresse de 24 h (3 fois par jour).", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp))
         }
         item { BanniereAnnonce(s) }
         item { Text("Boîte de réception (${mails.size})", style = MaterialTheme.typography.titleMedium) }
@@ -858,87 +876,6 @@ fun EmailTemporaire(s: AppState) {
             },
             dismissButton = { TextButton(onClick = { ouvert = null }) { Text("Fermer") } },
         )
-    }
-}
-
-@Composable
-fun NumerosSms(s: AppState) {
-    val presse = LocalClipboardManager.current; val cs = MaterialTheme.colorScheme
-    var numeros by remember { mutableStateOf<List<Phone>?>(null) }
-    var choisi by remember { mutableStateOf<Phone?>(null) }
-    var sms by remember { mutableStateOf<List<Sms>>(emptyList()) }
-    var paysLocation by remember { mutableStateOf("BJ") }
-    var location by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { numeros = try { s.api.phones() } catch (e: Exception) { s.toast(e.message ?: "Erreur"); emptyList() } }
-    LaunchedEffect(choisi?.id) {
-        val p = choisi ?: return@LaunchedEffect
-        sms = emptyList()
-        while (true) { try { sms = s.api.sms(p.id) } catch (_: Exception) { }; delay(8000) }
-    }
-    BackHandler(enabled = choisi != null) { choisi = null }
-    val p = choisi
-    LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        if (p == null) {
-            item {
-                CarteSection("Numéro privé") {
-                    Text("Un numéro rien que pour toi pendant 20 minutes : toi seul vois les SMS reçus.", color = cs.onSurfaceVariant)
-                    Spacer(Modifier.height(10.dp))
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(PAYS.keys.toList()) { c -> FilterChip(selected = paysLocation == c, onClick = { paysLocation = c }, label = { Text(PAYS[c] ?: c) }) }
-                    }
-                    Spacer(Modifier.height(10.dp))
-                    Button(enabled = !location, modifier = Modifier.fillMaxWidth().height(48.dp), onClick = {
-                        if (!s.exigerConnexion()) return@Button
-                        location = true
-                        s.lancer {
-                            try { choisi = s.api.rent(paysLocation); s.rafraichirMoi(); s.toast("Numéro loué pour 20 minutes") } finally { location = false }
-                        }
-                    }) { if (location) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) else Text("Louer un numéro · 1 crédit") }
-                    Text(
-                        if (s.session == null) "Connecte-toi pour louer un numéro." else "Crédits : ${s.me.credits}. Gagne-en avec une vidéo (Mon compte) ou un pack VIP.",
-                        style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant, modifier = Modifier.padding(top = 8.dp),
-                    )
-                }
-            }
-            item { BanniereAnnonce(s) }
-            item { Text("Numéros publics : tout le monde voit les SMS reçus. N'utilise jamais un numéro public pour un compte important.", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant) }
-            val l = numeros
-            if (l == null) item { Box(Modifier.fillMaxWidth().padding(40.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() } }
-            else items(l, key = { it.id }) { n ->
-                Card(onClick = { choisi = n }, colors = CardDefaults.cardColors(containerColor = cs.surfaceContainerLowest), modifier = Modifier.fillMaxWidth()) {
-                    Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            Text(n.e164, style = Mono.copy(fontSize = 16.sp))
-                            Text("${PAYS[n.country] ?: n.country} · ${n.sms24h} SMS" + (n.lastSmsAt?.let { " · ${ilYa(it)}" } ?: ""), style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
-                        }
-                        IconButton(onClick = { presse.setText(AnnotatedString(n.e164)); s.toast("Numéro copié") }) { Icon(Icons.Outlined.ContentCopy, "Copier") }
-                    }
-                }
-            }
-        } else {
-            item {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { choisi = null }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Retour") }
-                    Column(Modifier.weight(1f)) {
-                        Text(p.e164, style = Mono.copy(fontSize = 18.sp))
-                        Text((PAYS[p.country] ?: p.country) + (p.rentedUntil?.let { " · privé jusqu'à ${heure(it)}" } ?: ""), style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
-                    }
-                    FilledTonalButton(onClick = { presse.setText(AnnotatedString(p.e164)); s.toast("Numéro copié") }) { Text("Copier") }
-                }
-            }
-            if (sms.isEmpty()) item { Text("En attente de SMS… Envoie ton code sur ce numéro.", color = cs.onSurfaceVariant, modifier = Modifier.padding(16.dp)) }
-            items(sms) { m ->
-                val code = CODE.find(m.body)?.value?.filter { it.isDigit() }
-                Card(onClick = { if (code != null) { presse.setText(AnnotatedString(code)); s.toast("Code copié : $code") } },
-                    colors = CardDefaults.cardColors(containerColor = cs.surfaceContainerLowest), modifier = Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp)) {
-                        Row { Text(m.sender, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f)); Text(ilYa(m.receivedAt), style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant) }
-                        Text(m.body)
-                        if (code != null) Text("Touche pour copier le code $code", style = MaterialTheme.typography.bodySmall, color = cs.tertiary, modifier = Modifier.padding(top = 4.dp))
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -995,13 +932,10 @@ fun Compte(s: AppState) {
                     Spacer(Modifier.height(6.dp))
                     Text("Pack outils : " + (PACKS.firstOrNull { it.id == s.me.plan }?.nom ?: "Gratuit") +
                         (s.me.planUntil?.takeIf { s.me.vip }?.let { " · jusqu'au ${dateHeure(it)}" } ?: ""), color = cs.onSurfaceVariant)
-                    Text("Crédits de location de numéros : ${s.me.credits}", color = cs.onSurfaceVariant)
                     if (s.me.role == "admin") { Spacer(Modifier.height(8.dp)); Surface(color = cs.tertiaryContainer, shape = CircleShape) { Text("Administrateur", Modifier.padding(horizontal = 10.dp, vertical = 4.dp), color = cs.onTertiaryContainer, style = MaterialTheme.typography.labelMedium) } }
                 }
                 Spacer(Modifier.height(12.dp))
-                BoutonVideo(s)
-                Text("Une vidéo regardée jusqu'au bout = 1 crédit (3 par jour).", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp))
-                Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(8.dp))
                 SousTitre("Packs VIP")
                 Spacer(Modifier.height(8.dp))
                 PACKS.forEach { pk ->

@@ -2,7 +2,8 @@
 // AfricansBiz — admob-reward
 // Vérification côté serveur (SSV) des pubs vidéo récompensées AdMob.
 // Google appelle cette URL après chaque vidéo regardée jusqu'au bout ;
-// on vérifie sa signature ECDSA avant d'accorder +1 crédit (3 par jour max).
+// on vérifie sa signature ECDSA avant de prolonger de 24 h la boîte mail temporaire
+// dont l'adresse est passée dans custom_data (3 fois par jour et par adresse).
 //
 // URL à coller dans AdMob (bloc d'annonces avec récompense → Vérification côté serveur) :
 //   https://<projet>.supabase.co/functions/v1/admob-reward
@@ -80,14 +81,17 @@ Deno.serve(async (req) => {
   if (unit && url.searchParams.get("ad_unit") !== unit) return texte("bloc d'annonces refusé", 403);
 
   const tx = url.searchParams.get("transaction_id") ?? "";
+  const adresse = (url.searchParams.get("custom_data") ?? "").trim().toLowerCase();
   const user = url.searchParams.get("user_id") ?? "";
-  // Les tests AdMob n'ont pas d'utilisateur : on confirme sans rien accorder
-  if (!tx || !/^[0-9a-f-]{36}$/.test(user)) return texte("ok");
+  // Les tests AdMob n'ont pas d'adresse : on confirme sans rien accorder
+  if (!tx || !/^[^@\s]+@[^@\s]+$/.test(adresse)) return texte("ok");
 
-  const { data, error } = await admin.rpc("accorder_recompense", { p_tx: "admob:" + tx, p_user: user });
+  const { data, error } = await admin.rpc("accorder_recompense", {
+    p_tx: "admob:" + tx, p_adresse: adresse, p_user: /^[0-9a-f-]{36}$/.test(user) ? user : null,
+  });
   if (error) {
     console.error(error);
     return texte("erreur", 500);
   }
-  return json({ credits: data });
+  return json({ expires_at: data });
 });
