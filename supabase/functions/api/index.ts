@@ -8,6 +8,9 @@
 //   GET  /mailbox/messages         lire les mails (address + token)
 //   GET  /numbers                  numéros publics
 //   GET  /numbers/:id/sms          SMS d'un numéro
+//   GET  /annonces/formules        tarifs de l'espace annonceurs
+//   GET  /annonces/servir          une annonce active au hasard (compte une vue)
+//   GET  /annonces/clic/:id        compte le clic puis redirige vers l'annonceur
 // Connecté
 //   GET  /me                       profil (plan, rôle…)
 //   POST /orders                   passer commande
@@ -20,16 +23,20 @@
 //   POST /pay/init                 acheter un pack VIP
 //   POST /pay/otp                  code OTP après push (certains réseaux)
 //   GET  /pay/status?id=           suivi d'un paiement
-//   POST /rent                     louer un numéro privé (VIP)
+//   POST /rent                     louer un numéro privé (VIP ou crédit gagné en vidéo)
+//   POST /annonces                 créer une annonce {formule, titre, texte, lien}
+//   GET  /annonces[?all=1]         mes annonces (toutes si admin)
+//   POST /annonces/:id/payer       payer l'annonce (SasPay)
 // Administrateur
 //   POST /orders/:id/quote         envoyer un devis {amount, note}
 //   POST /orders/:id/status        changer d'étape {status, note}
 //   POST /orders/:id/deliver       livrer {label, url}
+//   POST /annonces/:id/revue       {decision: "accepter" | "refuser", motif}
 //
 // Déploiement : supabase functions deploy api --no-verify-jwt
 // =========================================================
 import {
-  admin, checkAndApply, clientIp, cors, DIAL, err, getUser, json, MAIL_HOURS, PACKS, PAY_ERRORS, payNetworks,
+  admin, ANNONCE_FORMULES, checkAndApply, clientIp, cors, DIAL, err, getUser, json, MAIL_HOURS, PACKS, PAY_ERRORS, payNetworks,
   randomToken, saspay, SasPayError, sha256,
 } from "../_shared/util.ts";
 
@@ -43,12 +50,14 @@ const STATUS_LABEL: Record<string, string> = {
   validation: "Livraison prête, à valider", livree: "Livrée", annulee: "Commande annulée",
 };
 const UUID = "[0-9a-f-]{36}";
+const SITE = Deno.env.get("SITE_ORIGIN") ?? "https://hedessou.github.io/africansbiz/";
+const API_PUBLIC = (Deno.env.get("SUPABASE_URL") ?? "") + "/functions/v1/api";
 
 async function profileOf(userId: string) {
   const { data } = await admin.from("profiles").select("*").eq("id", userId).maybeSingle();
   const p = data ?? { plan: "free", credits: 0, plan_until: null, banned: false, role: "client" };
   const expired = p.plan !== "free" && p.plan_until && new Date(p.plan_until) < new Date();
-  return expired ? { ...p, plan: "free", credits: 0 } : p;
+  return expired ? { ...p, plan: "free" } : p; // les crédits restants (vidéos, ancien pack) restent utilisables
 }
 
 // Charge une commande et vérifie que l'utilisateur y a droit (client ou admin)
@@ -87,7 +96,7 @@ async function addEvent(orderId: string, kind: string, label: string, detail: st
 // Lance un paiement SasPay "softpay" : la demande arrive directement sur le téléphone du client
 async function pushPayment(
   user: { id: string; email?: string },
-  o: { amount: number; description: string; pack?: string; order_id?: string },
+  o: { amount: number; description: string; pack?: string; order_id?: string; annonce_id?: string },
   body: any,
 ) {
   const country = String(body.country ?? "BJ").toUpperCase();
@@ -102,7 +111,7 @@ async function pushPayment(
   const [first, ...rest] = String(body.full_name ?? "").trim().split(/\s+/);
 
   const { data: pay, error: payErr } = await admin.from("payments")
-    .insert({ user_id: user.id, pack: o.pack ?? null, order_id: o.order_id ?? null, amount: o.amount, provider: "saspay" })
+    .insert({ user_id: user.id, pack: o.pack ?? null, order_id: o.order_id ?? null, annonce_id: o.annonce_id ?? null, amount: o.amount, provider: "saspay" })
     .select("id").single();
   if (payErr) return err("Paiement impossible, réessaie", 500);
 
@@ -123,7 +132,7 @@ async function pushPayment(
           last_name: rest.join(" ") || "AfricansBiz",
           phone: "+" + dial + digits,
         },
-        metadata: { payment_row: pay.id, user_id: user.id, pack: o.pack ?? null, order_id: o.order_id ?? null },
+        metadata: { payment_row: pay.id, user_id: user.id, pack: o.pack ?? null, order_id: o.order_id ?? null, annonce_id: o.annonce_id ?? null },
       }),
     });
     await admin.from("payments").update({ provider_tx: String(r.id) }).eq("id", pay.id);
@@ -246,6 +255,26 @@ Deno.serve(async (req) => {
       const { data } = await admin.from("sms").select("sender, body, received_at").eq("number_id", n.id)
         .is("owner", null).order("received_at", { ascending: false }).limit(50);
       return json({ sms: data ?? [] });
+    }
+
+    // ---------- Annonces (public) ----------
+    if (req.method === "GET" && path === "/annonces/formules") return json({ formules: ANNONCE_FORMULES });
+
+    if (req.method === "GET" && path === "/annonces/servir") {
+      const { data } = await admin.from("annonces").select("id, titre, texte")
+        .eq("statut", "active").gt("fin", new Date().toISOString()).limit(30);
+      if (!data?.length) return json({ annonce: null });
+      const a = data[Math.floor(Math.random() * data.length)];
+      await admin.rpc("annonce_compter", { p_id: a.id, p_clic: false });
+      return json({ annonce: { id: a.id, titre: a.titre, texte: a.texte, url: `${API_PUBLIC}/annonces/clic/${a.id}` } });
+    }
+
+    m = path.match(new RegExp(`^/annonces/clic/(${UUID})$`));
+    if (req.method === "GET" && m) {
+      const { data: a } = await admin.from("annonces").select("lien, statut").eq("id", m[1]).maybeSingle();
+      if (!a || a.statut !== "active") return new Response(null, { status: 302, headers: { ...cors, location: SITE } });
+      await admin.rpc("annonce_compter", { p_id: m[1], p_clic: true });
+      return new Response(null, { status: 302, headers: { ...cors, location: a.lien } });
     }
 
     // =================== CONNECTÉ ===================
@@ -385,12 +414,58 @@ Deno.serve(async (req) => {
       return err("Route inconnue", 404);
     }
 
+    // ---------- Espace annonceurs ----------
+    if (req.method === "POST" && path === "/annonces") {
+      const b = await req.json().catch(() => ({}));
+      const f = ANNONCE_FORMULES[String(b.formule ?? "")];
+      if (!f) return err("Formule inconnue");
+      const titre = String(b.titre ?? "").trim(), texte = String(b.texte ?? "").trim(), lien = String(b.lien ?? "").trim();
+      if (titre.length < 3 || titre.length > 60) return err("Titre : 3 à 60 caractères");
+      if (texte.length < 10 || texte.length > 160) return err("Texte : 10 à 160 caractères");
+      if (!/^https:\/\/[^\s]+$/.test(lien) || lien.length > 300) return err("Lien https:// valide requis");
+      const { count } = await admin.from("annonces").select("id", { count: "exact", head: true })
+        .eq("user_id", user.id).eq("statut", "a_payer");
+      if ((count ?? 0) >= 5) return err("Tu as déjà 5 annonces en attente de paiement", 429);
+      const { data, error } = await admin.from("annonces")
+        .insert({ user_id: user.id, titre, texte, lien, formule: b.formule, jours: f.jours, prix: f.prix }).select().single();
+      if (error) return err("Création impossible, réessaie", 500);
+      return json({ annonce: data });
+    }
+
+    if (req.method === "GET" && path === "/annonces") {
+      let q = admin.from("annonces").select("*").order("created_at", { ascending: false }).limit(100);
+      if (!(isAdmin && url.searchParams.get("all") === "1")) q = q.eq("user_id", user.id);
+      const { data } = await q;
+      return json({ annonces: data ?? [] });
+    }
+
+    m = path.match(new RegExp(`^/annonces/(${UUID})/(payer|revue)$`));
+    if (req.method === "POST" && m) {
+      const { data: a } = await admin.from("annonces").select("*").eq("id", m[1]).maybeSingle();
+      if (!a || (a.user_id !== user.id && !isAdmin)) return err("Annonce introuvable", 404);
+      const body = await req.json().catch(() => ({}));
+      if (m[2] === "payer") {
+        if (a.user_id !== user.id) return err("Seul l'annonceur peut payer son annonce", 403);
+        if (a.statut !== "a_payer") return err("Cette annonce n'est pas à payer");
+        return await pushPayment(user, { amount: a.prix, description: `AfricansBiz — Annonce ${a.formule}`, annonce_id: a.id }, body);
+      }
+      if (!isAdmin) return err("Réservé à l'administrateur", 403);
+      if (a.statut !== "en_revue") return err("Rien à valider pour cette annonce");
+      if (body.decision === "accepter") {
+        const debut = new Date(), fin = new Date(debut.getTime() + a.jours * 86_400_000);
+        await admin.from("annonces").update({ statut: "active", debut: debut.toISOString(), fin: fin.toISOString(), motif: null }).eq("id", a.id);
+      } else {
+        await admin.from("annonces").update({ statut: "refusee", motif: String(body.motif ?? "").slice(0, 300) || "Annonce refusée" }).eq("id", a.id);
+      }
+      return json({ ok: true });
+    }
+
     // ---------- Location d'un numéro privé ----------
     if (req.method === "POST" && path === "/rent") {
       const { country } = await req.json().catch(() => ({}));
       const { data, error } = await admin.rpc("rent_number", { p_user: user.id, p_country: String(country ?? "").toUpperCase(), p_minutes: 20 });
       if (error) {
-        const msg = error.message.includes("VIP_REQUIRED") ? "Location réservée aux membres VIP"
+        const msg = error.message.includes("VIP_REQUIRED") ? "Location réservée aux VIP. Astuce : regarde une vidéo dans l'app pour gagner un crédit"
           : error.message.includes("NO_CREDITS") ? "Plus de locations disponibles sur ton pack"
           : error.message.includes("NO_NUMBER") ? "Aucun numéro libre dans ce pays pour le moment, réessaie dans quelques minutes"
           : "Location impossible";

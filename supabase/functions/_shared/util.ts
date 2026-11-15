@@ -60,6 +60,12 @@ export const PACKS: Record<string, { price: number; label: string }> = {
   or: { price: 5000, label: "Or — 30 jours" },
 };
 
+// Espace annonceurs : bannière texte affichée aux visiteurs non VIP (site et app)
+export const ANNONCE_FORMULES: Record<string, { label: string; jours: number; prix: number }> = {
+  semaine: { label: "1 semaine", jours: 7, prix: 2500 },
+  mois: { label: "1 mois", jours: 30, prix: 8000 },
+};
+
 // Durée de vie d'une boîte mail selon le pack (en heures)
 export const MAIL_HOURS: Record<string, number> = { free: 1, bronze: 24, argent: 168, or: 168 };
 
