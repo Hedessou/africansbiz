@@ -133,6 +133,10 @@ body.vip .pub{display:none}
 .pub-google{display:block;min-height:0;border:0}
 .formules{grid-template-columns:1fr 1fr}
 .formules .reseau{height:auto;padding:10px 6px;line-height:1.35}
+.bandeau-app{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;padding:22px 24px;margin-top:8px}
+.bandeau-app .perle-app{width:52px;height:52px;border-radius:14px;background:var(--indigo);color:#E2B65A;display:grid;place-items:center}
+.bandeau-app h3{font-size:20px;margin-bottom:4px}
+@media (max-width:640px){.bandeau-app{grid-template-columns:1fr;text-align:left}.bandeau-app .btn{width:100%}}
 .annonce-ligne{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--trait)}
 
 /* ---------- vues ---------- */
@@ -442,6 +446,14 @@ textarea.c{min-height:110px;resize:vertical}
       <div class="familles" id="familles"></div>
     </section>
 
+    <section class="section">
+      <div class="carte bandeau-app">
+        <div class="perle-app"><svg class="i" style="width:26px;height:26px"><use href="#i-tel"/></svg></div>
+        <div><h3>L'application Android</h3><p class="second">Tes commandes, ton chat, l'email temporaire et les numéros SMS dans ta poche. Même compte que sur le site.</p></div>
+        <a class="btn btn-plein" href="app/">Télécharger l'app</a>
+      </div>
+    </section>
+
     <div class="pub" data-pub="accueil">Espace publicitaire</div>
 
     <section class="section">
@@ -550,7 +562,7 @@ textarea.c{min-height:110px;resize:vertical}
 </section>
 </main>
 
-<footer class="pied"><div class="wrap"><div>© <span id="annee"></span> AfricansBiz · Cotonou, Bénin</div><div>contact@africansbiz.com · <a href="#annonceurs">Annoncer</a> · <a href="conditions.html">Conditions</a> · <a href="confidentialite.html">Confidentialité</a></div></div></footer>
+<footer class="pied"><div class="wrap"><div>© <span id="annee"></span> AfricansBiz · Cotonou, Bénin</div><div>contact@africansbiz.com · <a href="app/">Application Android</a> · <a href="#annonceurs">Annoncer</a> · <a href="conditions.html">Conditions</a> · <a href="confidentialite.html">Confidentialité</a></div></div></footer>
 
 <nav class="nav-bas" aria-label="Navigation">
   <a href="#accueil" data-nav="accueil"><span class="ind"><svg class="i"><use href="#i-accueil"/></svg></span>Accueil</a>
