@@ -54,9 +54,9 @@ svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
 .hide{display:none!important}
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
-h1,h2,h3{font-family:var(--titre);letter-spacing:-.02em;line-height:1.12;text-wrap:balance}
+h1,h2,h3{font-family:var(--titre);letter-spacing:-.02em;line-height:1.14;font-weight:700;text-wrap:balance}
 p{text-wrap:pretty}
-.sur-titre{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--laiton-texte)}
+.sur-titre{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--laiton-texte);margin-bottom:6px}
 .muet{color:var(--encre-3)} .second{color:var(--encre-2)} .petit{font-size:13px}
 :focus-visible{outline:2px solid var(--indigo);outline-offset:2px;border-radius:6px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -64,19 +64,19 @@ p{text-wrap:pretty}
 /* ---------- barre d'application ---------- */
 .barre{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--ivoire) 86%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--trait)}
 .barre .wrap{display:flex;align-items:center;gap:16px;height:64px}
-.marque{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--encre);font-family:var(--titre);font-weight:800;font-size:20px;letter-spacing:-.03em}
-.marque b{color:var(--laiton-texte);font-weight:800}
+.marque{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--encre);font-family:var(--titre);font-weight:700;font-size:20px;letter-spacing:-.02em}
+.marque b{color:var(--laiton-texte);font-weight:700}
 .sceau{width:34px;height:34px;border-radius:10px;background:#23306E;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);display:grid;place-items:center}
 .sceau svg{width:20px;height:20px}
-.nav-haut{display:flex;gap:2px;margin-left:12px}
-.nav-haut a{padding:8px 12px;border-radius:var(--r-full);text-decoration:none;color:var(--encre-2);font-weight:500;font-size:14px;transition:background .15s}
+.nav-haut{display:flex;gap:4px;margin-left:12px}
+.nav-haut a{padding:8px 14px;border-radius:var(--r-sm);text-decoration:none;color:var(--encre-2);font-weight:500;font-size:14px;transition:background .15s}
 .nav-haut a:hover{background:var(--ivoire-moyen);color:var(--encre)}
 .nav-haut a.on{background:var(--indigo-pale);color:var(--sur-indigo-pale)}
 .barre .droite{margin-left:auto;display:flex;align-items:center;gap:6px}
-.icone-btn{width:40px;height:40px;border-radius:var(--r-full);display:grid;place-items:center;color:var(--encre-2);position:relative}
+.icone-btn{width:40px;height:40px;border-radius:var(--r-sm);display:grid;place-items:center;color:var(--encre-2);position:relative}
 .icone-btn:hover{background:var(--ivoire-moyen);color:var(--encre)}
-.pastille{position:absolute;top:6px;right:6px;min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:var(--laterite);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center}
-.vip-tag{font-size:11px;font-weight:700;letter-spacing:.06em;padding:3px 9px;border-radius:99px;background:var(--laiton-pale);color:var(--sur-laiton-pale)}
+.pastille{position:absolute;top:6px;right:6px;min-width:16px;height:16px;padding:0 4px;border-radius:6px;background:var(--laterite);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center}
+.vip-tag{font-size:11px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:6px;background:var(--laiton-pale);color:var(--sur-laiton-pale)}
 @media (max-width:820px){.nav-haut{display:none}}
 
 /* barre de navigation du bas (MD3) */
@@ -85,14 +85,14 @@ p{text-wrap:pretty}
   :root{--barre-bas:76px}
   .nav-bas{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:30;height:76px;background:var(--ivoire-bas);border-top:1px solid var(--trait);padding:8px 4px calc(8px + env(safe-area-inset-bottom))}
   .nav-bas a{display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--encre-2);font-size:12px;font-weight:500;position:relative}
-  .nav-bas a span.ind{width:56px;height:30px;border-radius:99px;display:grid;place-items:center;transition:background .2s var(--sortie)}
+  .nav-bas a span.ind{width:56px;height:30px;border-radius:8px;display:grid;place-items:center;transition:background .2s var(--sortie)}
   .nav-bas a.on{color:var(--encre)}
   .nav-bas a.on span.ind{background:var(--indigo-pale);color:var(--sur-indigo-pale)}
   .nav-bas .pastille{top:-2px;right:calc(50% - 26px)}
 }
 
 /* ---------- boutons ---------- */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;height:44px;padding:0 20px;border-radius:var(--r-full);font-weight:600;font-size:14.5px;transition:transform .12s var(--sortie),background .15s,box-shadow .15s;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;height:44px;padding:0 20px;border-radius:var(--r-sm);font-weight:600;font-size:14.5px;transition:transform .12s var(--sortie),background .15s,box-shadow .15s;white-space:nowrap}
 .btn:active{transform:scale(.97)}
 .btn:disabled{opacity:.45;pointer-events:none}
 .btn-plein{background:var(--indigo);color:var(--sur-indigo)}
@@ -109,10 +109,10 @@ p{text-wrap:pretty}
 
 /* ---------- surfaces ---------- */
 .carte{background:var(--carte);border-radius:var(--r-lg);box-shadow:var(--anneau)}
-.puce{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:var(--r-sm);border:1px solid var(--contour);font-size:13.5px;font-weight:500;color:var(--encre-2);white-space:nowrap;flex:none}
+.puce{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:6px;border:1px solid var(--contour);font-size:13.5px;font-weight:500;color:var(--encre-2);white-space:nowrap;flex:none}
 .puce.on{background:var(--indigo-pale);border-color:transparent;color:var(--sur-indigo-pale)}
 .puces{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0 6px}
-.statut{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.statut{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:6px;white-space:nowrap}
 .statut::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
 .s-devis{background:var(--ivoire-moyen);color:var(--encre-2)}
 .s-a_payer{background:var(--laiton-pale);color:var(--sur-laiton-pale)}
@@ -148,19 +148,27 @@ body.vip .pub{display:none}
 .entete-vue p{color:var(--encre-2);margin-top:8px;max-width:620px}
 
 /* ---------- accueil ---------- */
-.heros{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:center;min-height:min(640px,calc(100svh - 64px));padding:28px 0}
-.heros h1{font-size:clamp(38px,6.4vw,72px);font-weight:800;letter-spacing:-.035em;line-height:1.02}
+.heros{display:grid;grid-template-columns:1.08fr .92fr;gap:32px;align-items:center;min-height:min(580px,calc(100svh - 80px));padding:32px 0}
+.heros h1{font-size:clamp(34px,5.6vw,62px);font-weight:700;letter-spacing:-.025em;line-height:1.06}
 .heros h1 em{font-style:normal;color:var(--laiton-texte)}
-.heros p.chapo{font-size:17.5px;color:var(--encre-2);max-width:520px;margin:18px 0 26px;line-height:1.6}
+.heros p.chapo{font-size:16.5px;color:var(--encre-2);max-width:520px;margin:16px 0 24px;line-height:1.6}
 .heros .actions{display:flex;flex-wrap:wrap;gap:10px}
-.villes{margin-top:26px;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--encre-3)}
+.villes{margin-top:24px;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--encre-3)}
 .villes span::before{content:"◆";color:var(--laiton);font-size:8px;margin-right:6px;vertical-align:2px}
-.scene{position:relative;aspect-ratio:1;width:100%;max-width:560px;justify-self:center}
-.scene canvas{width:100%!important;height:100%!important;display:block;touch-action:pan-y}
-.scene .repli{position:absolute;inset:10%;border-radius:50%;background:radial-gradient(circle,var(--indigo) 1.2px,transparent 1.8px) 0 0/13px 13px;-webkit-mask:radial-gradient(circle at 38% 35%,#000 0,rgba(0,0,0,.75) 45%,rgba(0,0,0,.15) 72%);mask:radial-gradient(circle at 38% 35%,#000 0,rgba(0,0,0,.75) 45%,rgba(0,0,0,.15) 72%);opacity:.7}
-.scene .etiquette{position:absolute;left:6%;bottom:8%;background:var(--carte);box-shadow:var(--anneau-haut);border-radius:var(--r-md);padding:10px 14px;font-size:13px;display:flex;gap:10px;align-items:center}
-.scene .etiquette b{font-family:var(--mono);font-size:12px;color:var(--laiton-texte)}
-@media (max-width:820px){.heros{grid-template-columns:1fr;min-height:0;padding-top:20px}.scene{max-width:360px;order:-1;margin:-6px auto -20px}}
+
+/* vitrine atelier dans le hero (artisanat concret & suivi réel) */
+.vitrine-atelier{position:relative;width:100%;max-width:480px;justify-self:center;background:var(--carte);border-radius:var(--r-lg);box-shadow:var(--anneau-haut);padding:24px 22px 22px 30px;border:1px solid var(--trait)}
+.vitrine-atelier::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:8px;background:radial-gradient(circle at 0 50%,var(--ivoire) 3.5px,transparent 4px) 0 0/8px 12px repeat-y}
+.vitrine-atelier::after{content:"";position:absolute;left:14px;top:16px;bottom:16px;border-left:1.5px dashed var(--trait-fort)}
+.vitrine-atelier .v-entete{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.vitrine-atelier .v-ref{font-family:var(--mono);font-size:11.5px;color:var(--encre-3);font-weight:500}
+.vitrine-atelier h2{font-size:18px;font-weight:700;margin:4px 0 2px;letter-spacing:-.01em}
+.vitrine-atelier .v-client{font-size:13px;color:var(--encre-2)}
+.vitrine-atelier .v-fil{margin:14px 0;padding:12px 14px;background:var(--ivoire-bas);border-radius:var(--r-sm)}
+.vitrine-atelier .v-chat{margin:12px 0;padding:12px 14px;background:var(--champ);border-radius:var(--r-sm);border-left:3px solid var(--indigo);font-size:13px;line-height:1.5}
+.vitrine-atelier .v-chat b{display:block;font-size:11.5px;color:var(--indigo);margin-bottom:2px;font-family:var(--titre)}
+.vitrine-atelier .v-pied{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:12px;border-top:1px solid var(--trait);font-size:12.5px}
+@media (max-width:820px){.heros{grid-template-columns:1fr;min-height:0;padding-top:20px}.vitrine-atelier{max-width:100%;margin:8px auto 0}}
 
 .section{padding:56px 0 8px}
 .section-t{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}
@@ -411,7 +419,7 @@ textarea.c{min-height:110px;resize:vertical}
     <div class="heros">
       <div>
         <div class="sur-titre">L'atelier numérique de l'Afrique</div>
-        <h1 style="margin-top:14px">Tu commandes.<br>On construit.<br><em>Tu suis tout.</em></h1>
+        <h1>Tu commandes.<br>On construit.<br><em>Tu suis tout.</em></h1>
         <p class="chapo">Sites web, applications Android, robots WhatsApp, chaînes vidéo automatiques… Commande en quelques minutes, suis chaque étape de la livraison et discute avec ton développeur dans un chat privé. Paiement Mobile Money, sans quitter AfricansBiz.</p>
         <div class="actions">
           <a class="btn btn-plein" href="#services">Voir les services</a>
@@ -419,14 +427,46 @@ textarea.c{min-height:110px;resize:vertical}
         </div>
         <div class="villes"><span>Cotonou</span><span>Lomé</span><span>Abidjan</span><span>Dakar</span><span>Lagos</span><span>Douala</span></div>
       </div>
-      <div class="scene" id="scene" aria-hidden="true">
-        <div class="repli" id="repli"></div>
-        <div class="etiquette"><svg class="i" style="color:var(--palme)"><use href="#i-ok"/></svg><span>Commande <b>AB-2611-0042</b> livrée à Lomé</span></div>
+      <div class="vitrine-atelier" aria-label="Aperçu du suivi d'un travail d'atelier">
+        <div class="v-entete">
+          <div>
+            <div class="v-ref">BORDEREAU · AB-2611-0042</div>
+            <h3>Application Android &amp; Robot WhatsApp</h3>
+            <p class="v-client">Koffi M. · Lomé, Togo</p>
+          </div>
+          <span class="statut s-en_cours">En réalisation</span>
+        </div>
+
+        <div class="v-fil">
+          <div class="fil grand" style="margin-bottom:6px">
+            <span class="p fait" title="Commande"></span><span class="t fait"></span>
+            <span class="p fait" title="Devis"></span><span class="t fait"></span>
+            <span class="p fait" title="Paiement"></span><span class="t fait"></span>
+            <span class="p ici" title="Réalisation"></span><span class="t"></span>
+            <span class="p" title="Validation"></span><span class="t"></span>
+            <span class="p" title="Livrée"></span>
+          </div>
+          <div class="fil-noms">
+            <span class="second">Paiement validé</span>
+            <span class="ici" style="color:var(--laiton-texte)">Étape 4 · Réalisation</span>
+            <span class="muet">Livraison</span>
+          </div>
+        </div>
+
+        <div class="v-chat">
+          <b>Développeur AfricansBiz · Discussion privée</b>
+          « La passerelle Mobile Money (SasPay) est connectée et le build Android APK v1.2 est prêt. Tu peux tester sur ton téléphone. »
+        </div>
+
+        <div class="v-pied">
+          <span style="display:flex;align-items:center;gap:6px;color:var(--palme);font-weight:600"><svg class="i" style="width:16px;height:16px"><use href="#i-ok"/></svg> Validation client avant livraison</span>
+          <span class="mono" style="font-size:12px;color:var(--encre-3)">SasPay MTN / Moov</span>
+        </div>
       </div>
     </div>
 
     <section class="section">
-      <div class="section-t"><div><div class="sur-titre">Comment ça marche</div><h2 style="margin-top:8px">Quatre étapes, aucune surprise</h2></div></div>
+      <div class="section-t"><div><div class="sur-titre">Comment ça marche</div><h2>Quatre étapes, aucune surprise</h2></div></div>
       <div class="chemin">
         <div class="etape"><div class="perle"><svg class="i"><use href="#i-plume"/></svg></div><div><h3>Commande</h3><p>Choisis un service et décris ton besoin en quelques lignes.</p></div></div>
         <div class="etape"><div class="perle"><svg class="i"><use href="#i-argent"/></svg></div><div><h3>Paiement</h3><p>Prix fixe ou devis sous 24 h. Tu valides sur ton téléphone avec MTN, Moov ou Celtiis.</p></div></div>
@@ -436,7 +476,7 @@ textarea.c{min-height:110px;resize:vertical}
     </section>
 
     <section class="section">
-      <div class="section-t"><div><div class="sur-titre">Ce qu'on fait</div><h2 style="margin-top:8px">Un seul endroit pour tout ton numérique</h2></div><a class="btn btn-texte" href="#services">Tout voir →</a></div>
+      <div class="section-t"><div><div class="sur-titre">Ce qu'on fait</div><h2>Un seul endroit pour tout ton numérique</h2></div><a class="btn btn-texte" href="#services">Tout voir →</a></div>
       <div class="familles" id="familles"></div>
     </section>
 
@@ -447,8 +487,6 @@ textarea.c{min-height:110px;resize:vertical}
         <a class="btn btn-plein" href="app/">Télécharger l'app</a>
       </div>
     </section>
-
-    <div class="pub" data-pub="accueil">Espace publicitaire</div>
 
     <section class="section">
       <div class="garanties">
@@ -547,7 +585,6 @@ textarea.c{min-height:110px;resize:vertical}
 <div class="voile" id="voile"><div class="feuille" role="dialog" aria-modal="true"><div class="poignee"></div><div id="feuille"></div></div></div>
 <div class="toast" id="toast" role="status"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
 <script>
 /* =========================================================
    CONFIGURATION — laisse SUPABASE_URL vide pour le mode démo
@@ -583,8 +620,7 @@ document.addEventListener("keydown", e => { if(e.key==="Escape") fermerFeuille()
 const enteteFeuille = (titre, sous="") => `<div class="feuille-h"><div><h3>${titre}</h3>${sous?`<div class="muet petit" style="margin-top:4px">${sous}</div>`:""}</div><button class="icone-btn" data-fermer aria-label="Fermer">${ic("fermer")}</button></div>`;
 
 /* ---------- thème ---------- */
-function appliquerTheme(t){ document.documentElement.dataset.theme=t; $("#btnTheme").innerHTML = ic(t==="dark"?"soleil":"lune"); document.querySelector('meta[name=theme-color]').content = t==="dark"?"#0E1124":"#23306E"; globe?.theme(); }
-let globe = null;
+function appliquerTheme(t){ document.documentElement.dataset.theme=t; $("#btnTheme").innerHTML = ic(t==="dark"?"soleil":"lune"); document.querySelector('meta[name=theme-color]').content = t==="dark"?"#0E1124":"#23306E"; }
 appliquerTheme(store.get("theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
 $("#btnTheme").onclick = () => { const t = document.documentElement.dataset.theme==="dark"?"light":"dark"; store.set("theme",t); appliquerTheme(t); };
 
@@ -805,7 +841,6 @@ function route(){
   if(v==="admin"){ fermerDetail("admin"); rendreAdmin(); }
   if(v==="outils") demarrerOutils();
   if(location.hash==="#packs-vip") setTimeout(()=>document.getElementById("packs-vip").scrollIntoView(),50); else window.scrollTo({top:0});
-  globe?.visible(v==="accueil");
 }
 addEventListener("hashchange", route);
 
@@ -1152,64 +1187,6 @@ function rendrePacks(){
 $("#packs").addEventListener("click", e=>{ const b=e.target.closest("[data-pack]"); if(!b) return; const p=PACKS.find(x=>x.id===b.dataset.pack); payer({quoi:"pack", pack:p.id, montant:p.prix, titre:"Pack "+p.nom+" · "+p.duree, ensuite:()=>toast("Pack "+p.nom+" activé")}); });
 
 /* =========================================================
-   GLOBE 3D (Three.js) : réseau d'ateliers depuis Cotonou
-   ========================================================= */
-function creerGlobe(){
-  const hote = $("#scene"); if(!window.THREE || !hote) return null;
-  const T = window.THREE, reduit = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let renderer; try{ renderer = new T.WebGLRenderer({antialias:true, alpha:true}); }catch{ return null; }
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2)); hote.prepend(renderer.domElement); $("#repli").remove();
-  const scene = new T.Scene(), cam = new T.PerspectiveCamera(36,1,.1,100); cam.position.set(0,0,6.2);
-  const monde = new T.Group(); scene.add(monde); monde.rotation.x = .32;
-  const R = 1.6, N = 2600, pos = new Float32Array(N*3);
-  for(let i=0;i<N;i++){ const y=1-(i/(N-1))*2, r=Math.sqrt(1-y*y), t=Math.PI*(3-Math.sqrt(5))*i; pos.set([Math.cos(t)*r*R, y*R, Math.sin(t)*r*R], i*3); }
-  const gPts = new T.BufferGeometry(); gPts.setAttribute("position", new T.BufferAttribute(pos,3));
-  const mPts = new T.PointsMaterial({size:.022, transparent:true, opacity:.55});
-  monde.add(new T.Points(gPts, mPts));
-  const sphere = new T.Mesh(new T.SphereGeometry(R*.985,48,48), new T.MeshBasicMaterial({transparent:true, opacity:.9}));
-  monde.add(sphere);
-  const v = (lat, lon, h=R) => { const p=(90-lat)*Math.PI/180, l=(lon+180)*Math.PI/180; return new T.Vector3(-h*Math.sin(p)*Math.cos(l), h*Math.cos(p), h*Math.sin(p)*Math.sin(l)); };
-  const villes = [[6.37,2.39],[6.13,1.22],[5.36,-4.01],[14.72,-17.47],[6.52,3.38],[4.05,9.7],[12.37,-1.52],[-1.29,36.82],[5.6,-.19],[30.04,31.24],[48.86,2.35],[13.51,2.11]];
-  const mNoeud = new T.MeshBasicMaterial(), gNoeud = new T.SphereGeometry(.028,12,12);
-  villes.forEach(([a,o],i)=>{ const m=new T.Mesh(i?gNoeud:new T.SphereGeometry(.05,16,16), mNoeud); m.position.copy(v(a,o,R*1.005)); monde.add(m); });
-  const arcs = [], mArc = new T.LineBasicMaterial({transparent:true, opacity:.75}), gImp = new T.SphereGeometry(.022,10,10), mImp = new T.MeshBasicMaterial();
-  const origine = v(...villes[0]);
-  villes.slice(1).forEach(([a,o],i)=>{
-    const fin = v(a,o), mil = origine.clone().add(fin).multiplyScalar(.5), d = origine.distanceTo(fin);
-    mil.normalize().multiplyScalar(R + .25 + d*.35);
-    const courbe = new T.QuadraticBezierCurve3(origine, mil, fin);
-    monde.add(new T.Line(new T.BufferGeometry().setFromPoints(courbe.getPoints(48)), mArc));
-    const imp = new T.Mesh(gImp, mImp); monde.add(imp); arcs.push({courbe, imp, decal:i*.17});
-  });
-  // orienter le globe pour montrer l'Afrique de l'Ouest
-  monde.rotation.y = -Math.PI/2 - 2.39*Math.PI/180 + .35;
-  const couleurs = () => { const s=getComputedStyle(document.documentElement), c=k=>new T.Color(s.getPropertyValue(k).trim()); mPts.color=c("--indigo"); sphere.material.color=c("--ivoire"); mNoeud.color=c("--laiton"); mArc.color=c("--laiton"); mImp.color=c("--laiton"); };
-  couleurs();
-  const taille = () => { const w=hote.clientWidth; renderer.setSize(w,w,false); cam.aspect=1; cam.updateProjectionMatrix(); };
-  taille(); addEventListener("resize", taille);
-  let actif = true, glisse = null, vitesse = .0016;
-  hote.addEventListener("pointerdown", e=>{ glisse={x:e.clientX, r:monde.rotation.y}; });
-  addEventListener("pointermove", e=>{ if(glisse) monde.rotation.y = glisse.r + (e.clientX-glisse.x)*.006; });
-  addEventListener("pointerup", ()=>glisse=null);
-  let raf = 0;
-  const horloge = new T.Clock();
-  function boucle(){
-    raf = 0;
-    if(!actif) return;
-    const t = horloge.getElapsedTime();
-    if(!glisse && !reduit) monde.rotation.y += vitesse;
-    arcs.forEach(a=>{ const k=((t*.22 + a.decal) % 1); a.imp.position.copy(a.courbe.getPoint(k)); a.imp.visible = !reduit; });
-    renderer.render(scene, cam);
-    if(!reduit) raf = requestAnimationFrame(boucle);
-  }
-  const relancer = () => { if(!raf) raf = requestAnimationFrame(boucle); };
-  let enVue = true;
-  new IntersectionObserver(([e])=>{ enVue = e.isIntersecting; actif = enVue && vueCourante==="accueil"; if(actif) relancer(); }).observe(hote);
-  relancer();
-  return { theme(){ couleurs(); renderer.render(scene,cam); }, visible(o){ actif = o && enVue; if(actif) relancer(); } };
-}
-
-/* =========================================================
    PUBLICITÉ : annonce d'un annonceur > Google AdSense > « Ton annonce ici »
    Rien de tout cela n'est montré aux membres VIP.
    ========================================================= */
@@ -1312,8 +1289,6 @@ if(DEMO){ $("#bandeauDemo").classList.remove("hide"); if(!store.get("demo_moi"))
   rendreFamilles();
   await rafraichirMoi();
   route();
-  const lancer = () => { globe = creerGlobe(); globe?.visible(vueCourante==="accueil"); };
-  if(window.THREE) lancer(); else document.querySelector('script[src*="three"]')?.addEventListener("load", lancer);
 })();
 </script>
 </body>
